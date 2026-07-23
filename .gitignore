@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# Node / Vite
+node_modules/
+dist/
+build/
+.vite/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Alembic - keep migrations, ignore local cruft

@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* subtle grid-like styles */
+body { font-family: system-ui, -apple-system, sans-serif; }
