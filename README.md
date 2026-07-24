@@ -3,7 +3,7 @@
 A minimal, from-scratch re-implementation of [Langfuse](https://langfuse.com) built to understand its internals.
 Backend: **FastAPI + SQLAlchemy + SQLite**. Frontend: **React + Vite + TypeScript + Tailwind**. SDK: **Python + httpx**.
 
-📄 See [`mini-langfuse-plan.md`](./mini-langfuse-plan.md) for the full design doc, data model, and 5-milestone roadmap.
+📄 See [`mini-langfuse-plan.md`](./mini-langfuse-plan.md) for the full design doc, data model, and 5-milestone roadmap. Extension directions (M6+) live in [`mini-langfuse-plan-v2.md`](./mini-langfuse-plan-v2.md).
 
 ## Status
 
@@ -12,6 +12,7 @@ Backend: **FastAPI + SQLAlchemy + SQLite**. Frontend: **React + Vite + TypeScrip
 - ✅ **Milestone 3** — Session aggregation view; background flusher thread (non-blocking, atexit-safe); UI sessions list + conversation timeline.
 - ✅ **Milestone 4** — Score API + inline scoring UI (numeric / boolean / categorical); versioned Prompts with mutable `production` label pointer; SDK `create_prompt`, `get_prompt(name, label=...)`, `PromptClient.compile(vars)`; Prompt diff viewer in UI; Generation → PromptVersion link.
 - ✅ **Milestone 5** — `docker-compose up` deployment (multi-stage Node build → Nginx serving the SPA and proxying `/api/*` to the FastAPI container); pytest suite covering ingestion idempotency, cost math, tree building, prompt label movement, score validation, SDK contextvar isolation, flusher fault tolerance, and prompt compile.
+- ✅ **M7** — Waterfall chart on the trace detail page (three-column layout: Tree | Waterfall | Detail) with hover/select linked across all three panes.
 
 ## Architecture
 

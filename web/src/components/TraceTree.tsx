@@ -5,6 +5,8 @@ type Props = {
   nodes: Observation[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  onHover?: (id: string | null) => void;
+  hoveredId?: string | null;
   depth?: number;
 };
 
@@ -23,23 +25,36 @@ export default function TraceTree({
   nodes,
   selectedId,
   onSelect,
+  onHover,
+  hoveredId,
   depth = 0,
 }: Props) {
   return (
-    <ul className="space-y-0.5">
+    <ul>
       {nodes.map((n) => {
         const isSel = n.id === selectedId;
+        const isHover = n.id === hoveredId;
         const isErr = n.status === "ERROR";
         return (
           <li key={n.id}>
             <button
               onClick={() => onSelect(n.id)}
-              className={`w-full text-left flex items-center gap-2 rounded px-2 py-1 text-sm
-                ${isSel ? "bg-blue-50 ring-1 ring-blue-300" : "hover:bg-neutral-100"}
+              onMouseEnter={() => onHover?.(n.id)}
+              onMouseLeave={() => onHover?.(null)}
+              className={`w-full text-left flex items-center gap-2 rounded px-2 text-sm h-6
+                ${
+                  isSel
+                    ? "bg-blue-50 ring-1 ring-blue-300"
+                    : isHover
+                    ? "bg-neutral-100"
+                    : "hover:bg-neutral-100"
+                }
               `}
               style={{ paddingLeft: `${depth * 14 + 8}px` }}
             >
-              <span className={`shrink-0 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${typeColor[n.type]}`}>
+              <span
+                className={`shrink-0 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${typeColor[n.type]}`}
+              >
                 {n.type === "GENERATION" ? "GEN" : n.type[0]}
               </span>
               <span className={`truncate font-mono ${isErr ? "text-red-600" : ""}`}>
@@ -57,6 +72,8 @@ export default function TraceTree({
                 nodes={n.children}
                 selectedId={selectedId}
                 onSelect={onSelect}
+                onHover={onHover}
+                hoveredId={hoveredId}
                 depth={depth + 1}
               />
             )}

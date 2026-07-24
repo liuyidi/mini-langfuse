@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { api, Observation } from "../api/client";
 import TraceTree from "../components/TraceTree";
+import WaterfallChart from "../components/WaterfallChart";
 import JsonViewer from "../components/JsonViewer";
 import ScoresPanel from "../components/ScoresPanel";
 import { formatCost, formatDuration, formatNum, formatTime } from "../lib/format";
@@ -29,10 +30,11 @@ export default function TraceDetailPage() {
 
   const flat = useMemo(() => (q.data ? flatten(q.data.observations) : []), [q.data]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const selected = flat.find((o) => o.id === selectedId) ?? null;
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto">
+    <div className="p-6 max-w-[1600px] mx-auto">
       <div className="mb-4 text-sm text-neutral-500">
         <Link to="/" className="hover:underline">
           ← Back to traces
@@ -67,8 +69,8 @@ export default function TraceDetailPage() {
             </div>
           </div>
 
-          {/* Two-pane layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-4">
+          {/* Three-pane layout: Tree | Waterfall | Detail */}
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)_minmax(0,1.2fr)] gap-4">
             <div className="bg-white border border-neutral-200 rounded-md p-3">
               <div className="text-[11px] uppercase tracking-wider text-neutral-500 px-2 pb-2">
                 Observation Tree ({q.data.observation_count})
@@ -82,8 +84,23 @@ export default function TraceDetailPage() {
                   nodes={q.data.observations}
                   selectedId={selectedId}
                   onSelect={setSelectedId}
+                  onHover={setHoveredId}
+                  hoveredId={hoveredId}
                 />
               )}
+            </div>
+
+            <div className="bg-white border border-neutral-200 rounded-md p-3">
+              <div className="text-[11px] uppercase tracking-wider text-neutral-500 px-2 pb-2">
+                Waterfall
+              </div>
+              <WaterfallChart
+                nodes={flat}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                onHover={setHoveredId}
+                hoveredId={hoveredId}
+              />
             </div>
 
             <div className="bg-white border border-neutral-200 rounded-md p-4">
