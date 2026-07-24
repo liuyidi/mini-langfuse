@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { api, Observation } from "../api/client";
 import TraceTree from "../components/TraceTree";
 import JsonViewer from "../components/JsonViewer";
+import ScoresPanel from "../components/ScoresPanel";
 import { formatCost, formatDuration, formatNum, formatTime } from "../lib/format";
 
 function flatten(nodes: Observation[]): Observation[] {
@@ -60,6 +61,9 @@ export default function TraceDetailPage() {
               <Metric label="Duration" value={formatDuration(q.data.duration_ms)} />
               <Metric label="Tokens" value={formatNum(q.data.total_tokens)} />
               <Metric label="Cost" value={formatCost(q.data.total_cost_usd)} />
+            </div>
+            <div className="mt-4 border-t border-neutral-200 pt-3">
+              <ScoresPanel traceId={q.data.id} observationId={selected?.id} />
             </div>
           </div>
 
@@ -154,6 +158,11 @@ function ObservationDetail({ obs }: { obs: Observation }) {
           <Metric label="Input cost" value={formatCost(obs.input_cost_usd)} />
           <Metric label="Output cost" value={formatCost(obs.output_cost_usd)} />
           <Metric label="Total cost" value={<span className="font-semibold text-emerald-800">{formatCost(obs.total_cost_usd)}</span>} />
+        </div>
+      )}
+      {obs.prompt_version_id && (
+        <div className="text-xs text-neutral-500">
+          Prompt version: <span className="font-mono">{obs.prompt_version_id}</span>
         </div>
       )}
       {obs.status_message && (

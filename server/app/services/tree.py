@@ -29,6 +29,7 @@ def _obs_to_dict(obs: Observation) -> dict[str, Any]:
         "input_cost_usd": obs.input_cost_usd,
         "output_cost_usd": obs.output_cost_usd,
         "total_cost_usd": obs.total_cost_usd,
+        "prompt_version_id": obs.prompt_version_id,
         "children": [],
     }
 

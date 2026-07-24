@@ -46,6 +46,9 @@ class Observation(Base):
     output_cost_usd: Mapped[Optional[float]] = mapped_column(Float)
     total_cost_usd: Mapped[Optional[float]] = mapped_column(Float)
 
+    # Optional reference to the PromptVersion this generation used
+    prompt_version_id: Mapped[Optional[str]] = mapped_column(String, index=True)
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

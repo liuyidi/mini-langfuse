@@ -3,6 +3,8 @@ import TraceListPage from "./pages/TraceListPage";
 import TraceDetailPage from "./pages/TraceDetailPage";
 import SessionListPage from "./pages/SessionListPage";
 import SessionDetailPage from "./pages/SessionDetailPage";
+import PromptListPage from "./pages/PromptListPage";
+import PromptDetailPage from "./pages/PromptDetailPage";
 
 export default function App() {
   const linkCls = ({ isActive }: { isActive: boolean }) =>
@@ -21,6 +23,9 @@ export default function App() {
           <NavLink to="/sessions" className={linkCls}>
             Sessions
           </NavLink>
+          <NavLink to="/prompts" className={linkCls}>
+            Prompts
+          </NavLink>
         </nav>
       </header>
       <main>
@@ -29,6 +34,8 @@ export default function App() {
           <Route path="/traces/:id" element={<TraceDetailPage />} />
           <Route path="/sessions" element={<SessionListPage />} />
           <Route path="/sessions/:id" element={<SessionDetailPage />} />
+          <Route path="/prompts" element={<PromptListPage />} />
+          <Route path="/prompts/:name" element={<PromptDetailPage />} />
         </Routes>
       </main>
     </div>

@@ -10,7 +10,7 @@ Backend: **FastAPI + SQLAlchemy + SQLite**. Frontend: **React + Vite + TypeScrip
 - ✅ **Milestone 1** — End-to-end minimum loop: ingestion API, trace/observation model, tree view UI, working Python SDK, demo script.
 - ✅ **Milestone 2** — Generation cost calculation from built-in pricing table (OpenAI, Anthropic, Gemini); `@observe` decorator; `mini_langfuse.openai` drop-in wrapper; cost breakdown in UI.
 - ✅ **Milestone 3** — Session aggregation view; background flusher thread (non-blocking, atexit-safe); UI sessions list + conversation timeline.
-- ⏳ Milestone 4 — Scores & Prompt versioning
+- ✅ **Milestone 4** — Score API + inline scoring UI (numeric / boolean / categorical); versioned Prompts with mutable `production` label pointer; SDK `create_prompt`, `get_prompt(name, label=...)`, `PromptClient.compile(vars)`; Prompt diff viewer in UI; Generation → PromptVersion link.
 - ⏳ Milestone 5 — Docker, polish, tests
 
 ## Repo layout
@@ -122,6 +122,53 @@ resp = client.chat.completions.create(
 # GENERATION observation is auto-recorded with model, messages, output, and cost.
 ```
 
+### Prompt versioning + `production` label
+
+```python
+# Create v1
+v1 = client.create_prompt(
+    name="support",
+    type="chat",
+    content=[
+        {"role": "system", "content": "Be polite."},
+        {"role": "user", "content": "{{question}}"},
+    ],
+)
+# Ship v2 as production (label auto-moves from any older version)
+v2 = client.create_prompt(
+    name="support",
+    type="chat",
+    content=[...],  # updated content
+    labels=["production"],
+    commit_message="Firmer tone",
+)
+
+# In production code, always fetch by label — no redeploy needed to promote.
+prompt = client.get_prompt("support", label="production")
+messages = prompt.compile(question="Where's my order?")
+
+with client.trace(name="support-answer") as t:
+    with t.generation(name="reply", model="gpt-4o-mini",
+                      input={"messages": messages},
+                      prompt_version_id=prompt.id) as g:  # ← links to exact version
+        ...
+```
+
+### Scoring
+
+```python
+client.score(
+    trace_id=trace_id,
+    name="helpfulness",
+    data_type="NUMERIC",
+    value=0.9,
+    source="EVAL",
+    comment="Concise and accurate",
+)
+```
+
+Scores are also editable inline on the Trace detail page (numeric / boolean / categorical).
+
 ## Cost calculation
 
 Cost is computed server-side from a built-in pricing table (`server/app/services/cost.py`) whenever a GENERATION includes `model` and `usage`. Supported: OpenAI (gpt-4o/mini/turbo/o1), Anthropic Claude 3/3.5/4, Google Gemini 1.5/2.0. Update the table when prices change.
@@ -137,6 +184,13 @@ All under HTTP Basic auth using the demo keys.
 | GET | `/api/public/traces/:id` | Trace detail with tree of observations |
 | GET | `/api/public/sessions` | List sessions (aggregated by session_id) |
 | GET | `/api/public/sessions/:id` | Session detail with all traces in time order |
+| POST | `/api/public/scores` | Create a score on a trace or observation |
+| GET | `/api/public/scores?traceId=` | List scores |
+| POST | `/api/public/prompts` | Create prompt or a new version (auto-incrementing) |
+| GET | `/api/public/prompts` | List prompts with latest version metadata |
+| GET | `/api/public/prompts/:name` | Prompt detail with all versions |
+| GET | `/api/public/prompts/:name/resolve?version=&label=` | Resolve a single version |
+| PATCH | `/api/public/prompt-versions/:id/labels` | Move labels (each label points to one version) |
 | GET | `/health` | Liveness probe |
 
 ## SDK internals — background flushing

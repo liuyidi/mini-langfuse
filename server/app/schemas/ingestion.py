@@ -42,6 +42,7 @@ class ObservationBody(BaseModel):
     model: Optional[str] = None
     model_parameters: Optional[Any] = Field(default=None, alias="modelParameters")
     usage: Optional[dict[str, Any]] = None  # {prompt_tokens, completion_tokens, total_tokens}
+    prompt_version_id: Optional[str] = Field(default=None, alias="promptVersionId")
 
     model_config = ConfigDict(populate_by_name=True, extra="ignore")
 

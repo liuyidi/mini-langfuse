@@ -30,6 +30,7 @@ class ObservationOut(BaseModel):
     input_cost_usd: Optional[float] = None
     output_cost_usd: Optional[float] = None
     total_cost_usd: Optional[float] = None
+    prompt_version_id: Optional[str] = None
 
     model_config = ConfigDict()
 

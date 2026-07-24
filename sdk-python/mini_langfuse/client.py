@@ -90,6 +90,7 @@ class _Span:
             "end_time": "endTime",
             "status_message": "statusMessage",
             "model_parameters": "modelParameters",
+            "prompt_version_id": "promptVersionId",
         }
         return mapping.get(name, name)
 
@@ -137,8 +138,13 @@ class _Trace:
         input: Any = None,
         model_parameters: Any = None,
         metadata: Any = None,
+        prompt_version_id: Optional[str] = None,
     ) -> Iterator[_Span]:
-        extra = {"model": model, "modelParameters": model_parameters}
+        extra = {
+            "model": model,
+            "modelParameters": model_parameters,
+            "promptVersionId": prompt_version_id,
+        }
         yield from self._open(
             "GENERATION", name=name, input=input, metadata=metadata, extra=extra
         )
@@ -293,6 +299,94 @@ class Client:
             self._flusher.shutdown(timeout=5.0)
         finally:
             self._http.close()
+
+    # -------- Score & Prompt (M4) --------
+    def score(
+        self,
+        *,
+        name: str,
+        trace_id: str,
+        value: Optional[float] = None,
+        string_value: Optional[str] = None,
+        data_type: str = "NUMERIC",
+        observation_id: Optional[str] = None,
+        source: str = "API",
+        comment: Optional[str] = None,
+    ) -> dict[str, Any]:
+        """Post a Score synchronously (they're rare enough that a direct POST is fine)."""
+        payload = {
+            "name": name,
+            "traceId": trace_id,
+            "observationId": observation_id,
+            "dataType": data_type,
+            "value": value,
+            "stringValue": string_value,
+            "source": source,
+            "comment": comment,
+        }
+        resp = self._http.post(
+            f"{self._host}/api/public/scores",
+            content=json_dumps({k: v for k, v in payload.items() if v is not None}),
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    def create_prompt(
+        self,
+        *,
+        name: str,
+        content: Any,
+        type: str = "text",
+        config: Optional[Any] = None,
+        labels: Optional[list[str]] = None,
+        commit_message: Optional[str] = None,
+        created_by: Optional[str] = None,
+    ) -> dict[str, Any]:
+        """Create a new prompt or a new version of an existing one."""
+        payload = {
+            "name": name,
+            "type": type,
+            "content": content,
+            "config": config,
+            "labels": labels,
+            "commitMessage": commit_message,
+            "createdBy": created_by,
+        }
+        resp = self._http.post(
+            f"{self._host}/api/public/prompts",
+            content=json_dumps({k: v for k, v in payload.items() if v is not None}),
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    def get_prompt(
+        self,
+        name: str,
+        *,
+        version: Optional[int] = None,
+        label: Optional[str] = None,
+    ):
+        """Resolve a prompt version by name (+ optional version or label)."""
+        from .prompts import PromptClient
+
+        params = []
+        if version is not None:
+            params.append(f"version={version}")
+        if label is not None:
+            params.append(f"label={label}")
+        qs = ("?" + "&".join(params)) if params else ""
+        resp = self._http.get(f"{self._host}/api/public/prompts/{name}/resolve{qs}")
+        resp.raise_for_status()
+        data = resp.json()
+        return PromptClient(
+            id=data["id"],
+            name=name,
+            version=data["version"],
+            type=data["type"],
+            raw_content=data["content"],
+            labels=data.get("labels"),
+            config=data.get("config"),
+        )
 
     # -------- Internal --------
     def _enqueue(self, evt_type: str, body: dict[str, Any]) -> None:

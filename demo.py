@@ -167,6 +167,80 @@ def main() -> None:
                 )
             t.update(output={"answer": a})
 
+    # ---- M4: Prompt version management + scoring ----
+    # Create a prompt (v1)
+    v1 = client.create_prompt(
+        name="customer-support",
+        type="chat",
+        content=[
+            {"role": "system", "content": "You are a polite support agent."},
+            {"role": "user", "content": "The customer asks: {{question}}"},
+        ],
+        commit_message="Initial polite tone",
+    )
+    # Create v2 with a firmer tone
+    v2 = client.create_prompt(
+        name="customer-support",
+        type="chat",
+        content=[
+            {"role": "system", "content": "You are a helpful, direct support agent. Be concise."},
+            {"role": "user", "content": "The customer asks: {{question}}"},
+        ],
+        labels=["production"],  # points production label at v2
+        commit_message="Firmer, more concise tone",
+    )
+    print(f"Prompt versions created: v{v1['version']}, v{v2['version']} (production)")
+
+    # Fetch production prompt via SDK, compile with a variable, and log a generation using it
+    prompt = client.get_prompt("customer-support", label="production")
+    compiled_msgs = prompt.compile(question="Where's my order?")
+
+    with client.trace(
+        name="support-answer",
+        user_id="user_eve",
+        input={"question": "Where's my order?"},
+    ) as t:
+        with t.generation(
+            name="reply",
+            model="gpt-4o-mini",
+            input={"messages": compiled_msgs},
+            prompt_version_id=prompt.id,   # link the generation to the exact prompt version
+        ) as g:
+            time.sleep(0.2)
+            g.update(
+                output={"role": "assistant", "content": "It shipped yesterday; ETA Friday."},
+                usage={"prompt_tokens": 55, "completion_tokens": 12},
+            )
+        # Grab the trace id for scoring below
+        support_trace_id = t.id
+
+    # Ensure everything is flushed so the trace exists before we score it
+    client.flush(timeout=3)
+
+    # Score the trace (auto/API source). Also demonstrates BOOLEAN and CATEGORICAL.
+    client.score(
+        trace_id=support_trace_id,
+        name="helpfulness",
+        data_type="NUMERIC",
+        value=0.9,
+        source="EVAL",
+        comment="Concise and accurate",
+    )
+    client.score(
+        trace_id=support_trace_id,
+        name="follow-up-needed",
+        data_type="BOOLEAN",
+        value=0,  # 0 = false
+        source="EVAL",
+    )
+    client.score(
+        trace_id=support_trace_id,
+        name="tone",
+        data_type="CATEGORICAL",
+        string_value="friendly",
+        source="EVAL",
+    )
+
     client.close()
     print("Demo traces created. Open http://localhost:5173 to see them.")
 

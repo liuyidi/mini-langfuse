@@ -111,6 +111,7 @@ def _handle_observation(
             input_cost_usd=input_cost,
             output_cost_usd=output_cost,
             total_cost_usd=total_cost,
+            prompt_version_id=body.prompt_version_id,
         )
         db.add(obs)
     else:
@@ -134,6 +135,7 @@ def _handle_observation(
                 "input_cost_usd": input_cost,
                 "output_cost_usd": output_cost,
                 "total_cost_usd": total_cost,
+                "prompt_version_id": body.prompt_version_id,
             },
         )
         # Only overwrite start_time on create
