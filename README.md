@@ -13,6 +13,7 @@ Backend: **FastAPI + SQLAlchemy + SQLite**. Frontend: **React + Vite + TypeScrip
 - ✅ **Milestone 4** — Score API + inline scoring UI (numeric / boolean / categorical); versioned Prompts with mutable `production` label pointer; SDK `create_prompt`, `get_prompt(name, label=...)`, `PromptClient.compile(vars)`; Prompt diff viewer in UI; Generation → PromptVersion link.
 - ✅ **Milestone 5** — `docker-compose up` deployment (multi-stage Node build → Nginx serving the SPA and proxying `/api/*` to the FastAPI container); pytest suite covering ingestion idempotency, cost math, tree building, prompt label movement, score validation, SDK contextvar isolation, flusher fault tolerance, and prompt compile.
 - ✅ **M7** — Waterfall chart on the trace detail page (three-column layout: Tree | Waterfall | Detail) with hover/select linked across all three panes.
+- ✅ **M8** — Playground page: edit chat messages, auto-detect `{{variables}}`, run against mock / OpenAI / Anthropic providers, response with latency+tokens+cost, save-as-new-version dialog; every run is auto-persisted as a `playground:*` trace so it also shows up in Traces.
 
 ## Architecture
 
@@ -73,6 +74,8 @@ docker compose up --build -d
 - UI: http://localhost:8080
 - API: http://localhost:8000  (health probe: http://localhost:8000/health)
 - SQLite DB is persisted in the `mlf_data` volume.
+- Playground uses the built-in `mock` provider by default. To use real providers, pass keys through the compose env:
+  `OPENAI_API_KEY=... ANTHROPIC_API_KEY=... docker compose up --build -d`
 
 Then generate some traces (in a Python 3.10+ env):
 
@@ -227,6 +230,17 @@ client.score(
 
 Scores are also editable inline on the Trace detail page (numeric / boolean / categorical).
 
+### Playground (M8)
+
+Open any prompt (`/prompts/:name`) and click **"Open in Playground ▶"**. Edit chat messages, fill in `{{variables}}` that are auto-detected across all messages, pick a provider (mock / OpenAI / Anthropic) + model, and **Run** — response, latency, tokens, and cost appear in the right pane. Click **"Save as new version…"** to commit the edited prompt as v+1 (optionally with the `production` label).
+
+Every playground run is persisted as a `playground:<prompt>` trace and shows up in the Traces list — so you can compare "manual runs vs. real user traffic" side by side.
+
+Provider config:
+- `mock` (default) — no API key, deterministic echo response for demos.
+- `openai` — set `OPENAI_API_KEY` on the server container / process.
+- `anthropic` — set `ANTHROPIC_API_KEY` on the server container / process.
+
 ## Cost calculation
 
 Cost is computed server-side from a built-in pricing table (`server/app/services/cost.py`) whenever a GENERATION includes `model` and `usage`. Supported: OpenAI (gpt-4o/mini/turbo/o1), Anthropic Claude 3/3.5/4, Google Gemini 1.5/2.0. Update the table when prices change.
@@ -249,6 +263,7 @@ All under HTTP Basic auth using the demo keys.
 | GET | `/api/public/prompts/:name` | Prompt detail with all versions |
 | GET | `/api/public/prompts/:name/resolve?version=&label=` | Resolve a single version |
 | PATCH | `/api/public/prompt-versions/:id/labels` | Move labels (each label points to one version) |
+| POST | `/api/public/playground/run` | Proxy an LLM call and record it as a `playground:*` trace |
 | GET | `/health` | Liveness probe |
 
 ## SDK internals — background flushing

@@ -79,11 +79,17 @@ export default function PromptDetailPage() {
       {q.data && (
         <>
           <div className="bg-white border border-neutral-200 rounded-md p-4 mb-4">
-            <div className="flex items-baseline gap-3">
+            <div className="flex items-center gap-3">
               <h1 className="text-lg font-semibold font-mono">{q.data.name}</h1>
               <span className="text-xs text-neutral-500">
                 {versions.length} version{versions.length === 1 ? "" : "s"}
               </span>
+              <Link
+                to={`/prompts/${encodeURIComponent(decoded)}/playground`}
+                className="ml-auto text-sm bg-blue-600 hover:bg-blue-700 text-white rounded px-3 py-1"
+              >
+                Open in Playground ▶
+              </Link>
             </div>
           </div>
 
@@ -120,19 +126,27 @@ export default function PromptDetailPage() {
                     <td className="px-2 py-1 text-neutral-600 text-xs">{v.commit_msg ?? "—"}</td>
                     <td className="px-2 py-1 whitespace-nowrap text-xs">{formatTime(v.created_at)}</td>
                     <td className="px-2 py-1">
-                      <button
-                        onClick={() => {
-                          const next = (v.labels ?? []).includes("production")
-                            ? (v.labels ?? []).filter((x) => x !== "production")
-                            : [...(v.labels ?? []), "production"];
-                          updateLabels.mutate({ versionId: v.id, labels: next });
-                        }}
-                        className="text-xs text-blue-600 hover:underline"
-                      >
-                        {(v.labels ?? []).includes("production")
-                          ? "Remove production"
-                          : "Mark production"}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => {
+                            const next = (v.labels ?? []).includes("production")
+                              ? (v.labels ?? []).filter((x) => x !== "production")
+                              : [...(v.labels ?? []), "production"];
+                            updateLabels.mutate({ versionId: v.id, labels: next });
+                          }}
+                          className="text-xs text-blue-600 hover:underline"
+                        >
+                          {(v.labels ?? []).includes("production")
+                            ? "Remove production"
+                            : "Mark production"}
+                        </button>
+                        <Link
+                          to={`/prompts/${encodeURIComponent(decoded)}/playground?version=${v.version}`}
+                          className="text-xs text-blue-600 hover:underline"
+                        >
+                          Try ▶
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}

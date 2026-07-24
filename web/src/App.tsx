@@ -5,6 +5,7 @@ import SessionListPage from "./pages/SessionListPage";
 import SessionDetailPage from "./pages/SessionDetailPage";
 import PromptListPage from "./pages/PromptListPage";
 import PromptDetailPage from "./pages/PromptDetailPage";
+import PromptPlaygroundPage from "./pages/PromptPlaygroundPage";
 
 export default function App() {
   const linkCls = ({ isActive }: { isActive: boolean }) =>
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/sessions/:id" element={<SessionDetailPage />} />
           <Route path="/prompts" element={<PromptListPage />} />
           <Route path="/prompts/:name" element={<PromptDetailPage />} />
+          <Route path="/prompts/:name/playground" element={<PromptPlaygroundPage />} />
         </Routes>
       </main>
     </div>

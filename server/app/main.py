@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 
 from .api import ingestion as ingestion_api
+from .api import playground as playground_api
 from .api import prompts as prompts_api
 from .api import scores as scores_api
 from .api import sessions as sessions_api
@@ -55,3 +56,4 @@ app.include_router(traces_api.router)
 app.include_router(sessions_api.router)
 app.include_router(scores_api.router)
 app.include_router(prompts_api.router)
+app.include_router(playground_api.router)

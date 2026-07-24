@@ -168,4 +168,38 @@ export const api = {
       `/api/public/prompt-versions/${versionId}/labels`,
       { method: "PATCH", body: JSON.stringify({ labels }) },
     ),
+  createPromptVersion: (body: {
+    name: string;
+    type: "text" | "chat";
+    content: unknown;
+    labels?: string[];
+    commitMessage?: string;
+  }) =>
+    req<PromptVersion>(`/api/public/prompts`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+
+  playgroundRun: (body: {
+    provider: string;
+    model: string;
+    messages: { role: string; content: string }[];
+    params?: Record<string, unknown>;
+    promptName?: string;
+    promptVersionId?: string;
+    variables?: Record<string, string>;
+  }) =>
+    req<{
+      content: string;
+      usage: { prompt_tokens: number | null; completion_tokens: number | null; total_tokens: number | null };
+      latency_ms: number;
+      input_cost_usd: number | null;
+      output_cost_usd: number | null;
+      total_cost_usd: number | null;
+      trace_id: string;
+      observation_id: string;
+    }>(`/api/public/playground/run`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
 };

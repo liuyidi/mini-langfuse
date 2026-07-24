@@ -241,6 +241,31 @@ def main() -> None:
         source="EVAL",
     )
 
+    # ---- M8: fire one Playground run so the Traces list shows a playground:* trace ----
+    # Uses the mock provider so no API key is needed. Real users can also switch
+    # provider="openai" / "anthropic" in the UI.
+    import base64, httpx
+    creds = base64.b64encode(b"pk-lf-demo:sk-lf-demo").decode()
+    try:
+        httpx.post(
+            "http://localhost:8000/api/public/playground/run",
+            headers={"Authorization": f"Basic {creds}"},
+            json={
+                "provider": "mock",
+                "model": "mock-model",
+                "messages": [
+                    {"role": "system", "content": "You are a demo assistant."},
+                    {"role": "user", "content": "Say hi to {{name}}."},
+                ],
+                "params": {"temperature": 0.5, "max_tokens": 128},
+                "promptName": "customer-support",
+                "variables": {"name": "Alice"},
+            },
+            timeout=5,
+        )
+    except Exception as exc:
+        print(f"(playground pre-warm skipped: {exc})")
+
     client.close()
     print("Demo traces created. Open http://localhost:5173 to see them.")
 

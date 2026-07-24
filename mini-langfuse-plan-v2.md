@@ -10,7 +10,7 @@
 |---|---|---|---|---|---|
 | **M6** | 真实用户 + 多项目 + API key | 3-4 天 | 高（几乎所有表加 project_id 已经有了，但要加真实 user/session cookie） | — | ⭐⭐⭐⭐⭐ |
 | **M7** ✅ | 前端 waterfall 图 (**已完成**) | 1 天 | 无 | — | — |
-| **M8** | Playground（编辑 prompt 实时试跑） | 2-3 天 | 小（config/variables 字段） | 依赖 M6 的 API key 更好 | ⭐⭐⭐⭐ |
+| **M8** ✅ | Playground（编辑 prompt 实时试跑，**已完成**） | 2-3 天 | 小 | — | — |
 | **M9** | PostgreSQL + Alembic 迁移 | 1-2 天 | 中（换 JSON 类型、加迁移历史） | — | ⭐⭐⭐ |
 | **M10** | Streaming ingestion / SSE 实时 UI | 1-2 天 | 无 | — | ⭐⭐⭐ |
 
@@ -170,7 +170,7 @@ demo.py 已有的"Trace 2 agent-loop"里 span 时长各异（plan 0.05s / search
 
 ---
 
-## M8 — Playground（编辑 prompt 实时试跑）
+## M8 — Playground（编辑 prompt 实时试跑） ✅ (已完成)
 
 ### 为什么
 
