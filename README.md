@@ -8,7 +8,7 @@ Backend: **FastAPI + SQLAlchemy + SQLite**. Frontend: **React + Vite + TypeScrip
 ## Status
 
 - ✅ **Milestone 1** — End-to-end minimum loop: ingestion API, trace/observation model, tree view UI, working Python SDK, demo script.
-- ⏳ Milestone 2 — Generation & cost calculation (upcoming)
+- ✅ **Milestone 2** — Generation cost calculation from built-in pricing table (OpenAI, Anthropic, Gemini); `@observe` decorator; `mini_langfuse.openai` drop-in wrapper; cost breakdown in UI.
 - ⏳ Milestone 3 — Session view & background flusher
 - ⏳ Milestone 4 — Scores & Prompt versioning
 - ⏳ Milestone 5 — Docker, polish, tests
@@ -61,9 +61,11 @@ pip install -e .          # into the same virtualenv as the server, or a new one
 python ../demo.py
 ```
 
-Open http://localhost:5173 — you should see 3 traces. Click one to see the observation tree, click a span to see its input/output/metadata.
+Open http://localhost:5173 — you should see 4 traces. Click one to see the observation tree, click a span to see its input/output/metadata.
 
 ## Using the SDK
+
+### Manual API
 
 ```python
 from mini_langfuse import Client
@@ -86,7 +88,45 @@ client.close()
 Nested calls in the same context automatically become children of the enclosing span (via `contextvars`).
 Exceptions inside a span mark it as `ERROR` before propagating.
 
-## API (M1)
+### `@observe` decorator
+
+```python
+from mini_langfuse import Client, observe
+
+Client("pk-lf-demo", "sk-lf-demo")  # becomes the default client
+
+@observe()
+def retrieve(q: str) -> list[str]:
+    return search(q)
+
+@observe(as_type="generation", model="gpt-4o-mini")
+def summarize(docs: list[str]) -> str:
+    return openai_call(docs)  # args auto-captured, return auto-captured
+```
+
+If no trace is active, `@observe` auto-opens one named after the function. Nested `@observe`-decorated calls become children automatically.
+
+### OpenAI drop-in wrapper
+
+```python
+from mini_langfuse import Client
+from mini_langfuse.openai import OpenAI  # instead of `from openai import OpenAI`
+
+Client("pk-lf-demo", "sk-lf-demo")
+client = OpenAI()
+
+resp = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": "hi"}],
+)
+# GENERATION observation is auto-recorded with model, messages, output, and cost.
+```
+
+## Cost calculation
+
+Cost is computed server-side from a built-in pricing table (`server/app/services/cost.py`) whenever a GENERATION includes `model` and `usage`. Supported: OpenAI (gpt-4o/mini/turbo/o1), Anthropic Claude 3/3.5/4, Google Gemini 1.5/2.0. Update the table when prices change.
+
+## API
 
 All under HTTP Basic auth using the demo keys.
 

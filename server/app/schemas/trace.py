@@ -27,6 +27,8 @@ class ObservationOut(BaseModel):
     prompt_tokens: Optional[int] = None
     completion_tokens: Optional[int] = None
     total_tokens: Optional[int] = None
+    input_cost_usd: Optional[float] = None
+    output_cost_usd: Optional[float] = None
     total_cost_usd: Optional[float] = None
 
     model_config = ConfigDict()

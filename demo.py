@@ -1,6 +1,10 @@
 """
 Demo script: creates a few nested traces so the UI has something to render.
 
+M2 highlights:
+  - Uses @observe decorator (auto-captures args + return value)
+  - Simulates LLM calls with cost computed from the built-in pricing table
+
 Run:
     # 1) In one terminal, start the server:
     cd server && uvicorn app.main:app --reload
@@ -14,17 +18,43 @@ from __future__ import annotations
 import random
 import time
 
-from mini_langfuse import Client
+from mini_langfuse import Client, observe
+
+
+# --- Configure the default client so @observe knows where to send events ---
+client = Client(
+    public_key="pk-lf-demo",
+    secret_key="sk-lf-demo",
+    host="http://localhost:8000",
+)
+
+
+# ---- Decorated functions ----
+@observe()
+def retrieve(question: str) -> list[str]:
+    time.sleep(0.12)
+    return [f"Doc snippet relevant to '{question}'."]
+
+
+@observe(as_type="generation", model="gpt-4o-mini")
+def llm_answer(question: str, context: list[str]) -> str:
+    """A decorated pure-function generation. Auto-captures args + return.
+
+    NOTE: For real LLM cost accounting, use the mini_langfuse.openai wrapper
+    (mini_langfuse.openai.OpenAI) which extracts usage from the response.
+    """
+    time.sleep(0.35)
+    return f"Answer to: {question} (using {len(context)} docs)"
+
+
+@observe()
+def rag_pipeline(question: str) -> str:
+    docs = retrieve(question)
+    return llm_answer(question, docs)
 
 
 def main() -> None:
-    client = Client(
-        public_key="pk-lf-demo",
-        secret_key="sk-lf-demo",
-        host="http://localhost:8000",
-    )
-
-    # ---- Trace 1: A simple RAG-style pipeline ----
+    # ---- Trace 1: pure decorator flow ----
     with client.trace(
         name="rag-answer",
         user_id="user_alice",
@@ -32,28 +62,10 @@ def main() -> None:
         input={"question": "What is Langfuse?"},
         tags=["demo", "rag"],
     ) as t:
-        with t.span(name="retrieve", input={"q": "What is Langfuse?"}) as s:
-            time.sleep(0.12)
-            docs = ["Langfuse is an open-source LLM engineering platform."]
-            s.update(output={"docs": docs})
+        answer = rag_pipeline("What is Langfuse?")
+        t.update(output={"answer": answer})
 
-        with t.generation(
-            name="llm-answer",
-            model="gpt-4o-mini",
-            model_parameters={"temperature": 0.2, "max_tokens": 256},
-            input={"prompt": "Use these docs: " + docs[0]},
-        ) as g:
-            time.sleep(0.35)
-            g.update(
-                output={
-                    "content": "Langfuse is an open-source LLM engineering & observability platform."
-                },
-                usage={"prompt_tokens": 120, "completion_tokens": 42},
-            )
-
-        t.update(output={"answer": "Langfuse is an open-source LLM engineering platform."})
-
-    # ---- Trace 2: Nested spans with a failing sub-step ----
+    # ---- Trace 2: manual span API + a failing sub-step ----
     with client.trace(
         name="agent-loop",
         user_id="user_bob",
@@ -73,10 +85,12 @@ def main() -> None:
                 time.sleep(0.08)
                 raise RuntimeError("Payment gateway timeout")
         except RuntimeError:
-            pass  # SDK already recorded ERROR status on the span
+            pass  # SDK auto-marks the span as ERROR
 
         with t.generation(
-            name="summarize", model="gpt-4o", input={"context": "attempted booking"}
+            name="summarize",
+            model="gpt-4o",
+            input={"context": "attempted booking"},
         ) as g:
             time.sleep(0.15)
             g.update(
@@ -84,24 +98,42 @@ def main() -> None:
                 usage={"prompt_tokens": 60, "completion_tokens": 22},
             )
 
-    # ---- Trace 3: Random shape, another session for user_alice ----
+    # ---- Trace 3: Claude call ----
     with client.trace(
         name="chat-turn",
         user_id="user_alice",
         session_id="sess_1",
         input={"message": "Follow-up question"},
     ) as t:
-        depth = random.randint(1, 3)
-        for i in range(depth):
+        for i in range(random.randint(1, 3)):
             with t.span(name=f"step-{i}") as span:
                 time.sleep(0.03)
                 span.update(output={"i": i})
-
-        with t.generation(name="reply", model="gpt-4o-mini") as g:
+        with t.generation(name="reply", model="claude-3-5-haiku") as g:
             time.sleep(0.1)
             g.update(
                 output={"content": "Sure!"},
                 usage={"prompt_tokens": 25, "completion_tokens": 4},
+            )
+
+    # ---- Trace 4: emulates what mini_langfuse.openai wrapper would produce ----
+    # If you have `openai` installed & OPENAI_API_KEY set, use the real thing:
+    #     from mini_langfuse.openai import OpenAI
+    #     resp = OpenAI().chat.completions.create(model="gpt-4o", messages=[...])
+    with client.trace(name="openai-emulation", user_id="user_carol") as t:
+        with t.generation(
+            name="openai:gpt-4o",
+            model="gpt-4o",
+            model_parameters={"temperature": 0.2, "max_tokens": 256},
+            input={"messages": [{"role": "user", "content": "Explain SGD."}]},
+        ) as g:
+            time.sleep(0.42)
+            g.update(
+                output={
+                    "role": "assistant",
+                    "content": "SGD stands for stochastic gradient descent…",
+                },
+                usage={"prompt_tokens": 420, "completion_tokens": 180},
             )
 
     client.close()

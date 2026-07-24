@@ -14,6 +14,7 @@ from ..schemas.ingestion import (
     ObservationBody,
     TraceBody,
 )
+from .cost import compute_cost
 
 
 def _utcnow() -> datetime:
@@ -79,6 +80,14 @@ def _handle_observation(
     if total_tokens is None and (prompt_tokens is not None or completion_tokens is not None):
         total_tokens = (prompt_tokens or 0) + (completion_tokens or 0)
 
+    # Compute cost for GENERATIONs whenever we know the model and any token count
+    input_cost = output_cost = total_cost = None
+    if obs_type == "GENERATION":
+        model = body.model or (existing.model if existing else None)
+        input_cost, output_cost, total_cost = compute_cost(
+            model, prompt_tokens, completion_tokens
+        )
+
     if existing is None:
         obs = Observation(
             id=body.id,
@@ -99,6 +108,9 @@ def _handle_observation(
             prompt_tokens=prompt_tokens,
             completion_tokens=completion_tokens,
             total_tokens=total_tokens,
+            input_cost_usd=input_cost,
+            output_cost_usd=output_cost,
+            total_cost_usd=total_cost,
         )
         db.add(obs)
     else:
@@ -119,6 +131,9 @@ def _handle_observation(
                 "prompt_tokens": prompt_tokens,
                 "completion_tokens": completion_tokens,
                 "total_tokens": total_tokens,
+                "input_cost_usd": input_cost,
+                "output_cost_usd": output_cost,
+                "total_cost_usd": total_cost,
             },
         )
         # Only overwrite start_time on create

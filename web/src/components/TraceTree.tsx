@@ -1,5 +1,5 @@
 import { Observation } from "../api/client";
-import { formatDuration } from "../lib/format";
+import { formatCost, formatDuration } from "../lib/format";
 
 type Props = {
   nodes: Observation[];
@@ -45,8 +45,11 @@ export default function TraceTree({
               <span className={`truncate font-mono ${isErr ? "text-red-600" : ""}`}>
                 {n.name ?? "(unnamed)"}
               </span>
-              <span className="ml-auto text-[11px] text-neutral-500 tabular-nums">
-                {formatDuration(duration(n))}
+              <span className="ml-auto flex items-center gap-2 text-[11px] text-neutral-500 tabular-nums shrink-0">
+                {n.type === "GENERATION" && n.total_cost_usd != null && (
+                  <span className="text-emerald-700">{formatCost(n.total_cost_usd)}</span>
+                )}
+                <span>{formatDuration(duration(n))}</span>
               </span>
             </button>
             {n.children.length > 0 && (

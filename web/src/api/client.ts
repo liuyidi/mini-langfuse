@@ -22,6 +22,8 @@ export type Observation = {
   prompt_tokens: number | null;
   completion_tokens: number | null;
   total_tokens: number | null;
+  input_cost_usd: number | null;
+  output_cost_usd: number | null;
   total_cost_usd: number | null;
   children: Observation[];
 };

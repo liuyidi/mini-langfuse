@@ -143,12 +143,19 @@ function ObservationDetail({ obs }: { obs: Observation }) {
           <>
             <Metric label="Model" value={obs.model ?? "—"} />
             <Metric
-              label="Tokens (p/c/t)"
+              label="Tokens (in/out/total)"
               value={`${obs.prompt_tokens ?? "—"} / ${obs.completion_tokens ?? "—"} / ${obs.total_tokens ?? "—"}`}
             />
           </>
         )}
       </div>
+      {obs.type === "GENERATION" && obs.total_cost_usd != null && (
+        <div className="grid grid-cols-3 gap-3 text-sm bg-emerald-50 border border-emerald-200 rounded p-3">
+          <Metric label="Input cost" value={formatCost(obs.input_cost_usd)} />
+          <Metric label="Output cost" value={formatCost(obs.output_cost_usd)} />
+          <Metric label="Total cost" value={<span className="font-semibold text-emerald-800">{formatCost(obs.total_cost_usd)}</span>} />
+        </div>
+      )}
       {obs.status_message && (
         <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2">
           {obs.status_message}

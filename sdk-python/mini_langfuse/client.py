@@ -196,12 +196,15 @@ class Client:
                 g.update(output="hi", usage={"prompt_tokens": 5, "completion_tokens": 3})
     """
 
+    _default: "Client | None" = None
+
     def __init__(
         self,
         public_key: str,
         secret_key: str,
         host: str = "http://localhost:8000",
         timeout: float = 5.0,
+        make_default: bool = True,
     ) -> None:
         self._host = host.rstrip("/")
         creds = base64.b64encode(f"{public_key}:{secret_key}".encode()).decode()
@@ -215,6 +218,16 @@ class Client:
         # M1: eager batching - accumulate then flush every call.
         # Later milestones: background thread with periodic flush.
         self._buffer: list[dict[str, Any]] = []
+        if make_default:
+            Client._default = self
+
+    @classmethod
+    def get_default(cls) -> "Client | None":
+        return cls._default
+
+    @classmethod
+    def set_default(cls, client: "Client") -> None:
+        cls._default = client
 
     # -------- Public API --------
     @contextmanager
