@@ -1,12 +1,14 @@
 """Client + trace/span context managers.
 
-M1: synchronous flush after every event (simple; slow but correct).
-Later milestones swap to a background flusher thread.
+Event flow:
+  Client._enqueue()  →  Flusher._q  →  daemon thread batches  →  HTTP POST /ingestion
+
+The main thread never blocks on network. Guarantees flush at interpreter exit
+via atexit.
 """
 from __future__ import annotations
 
 import base64
-import json
 import logging
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -15,6 +17,7 @@ from typing import Any, Iterator, Optional
 import httpx
 
 from . import context
+from .flusher import Flusher, json_dumps
 from .ids import new_id
 
 log = logging.getLogger("mini_langfuse")
@@ -204,6 +207,8 @@ class Client:
         secret_key: str,
         host: str = "http://localhost:8000",
         timeout: float = 5.0,
+        batch_size: int = 50,
+        flush_interval: float = 1.0,
         make_default: bool = True,
     ) -> None:
         self._host = host.rstrip("/")
@@ -215,11 +220,25 @@ class Client:
                 "Content-Type": "application/json",
             },
         )
-        # M1: eager batching - accumulate then flush every call.
-        # Later milestones: background thread with periodic flush.
-        self._buffer: list[dict[str, Any]] = []
+        self._flusher = Flusher(
+            post=self._post_batch,
+            batch_size=batch_size,
+            flush_interval=flush_interval,
+        )
         if make_default:
             Client._default = self
+
+    def _post_batch(self, batch: list[dict[str, Any]]) -> None:
+        resp = self._http.post(
+            f"{self._host}/api/public/ingestion",
+            content=json_dumps({"batch": batch}),
+        )
+        if resp.status_code >= 400:
+            log.warning(
+                "mini_langfuse ingestion HTTP %s: %s",
+                resp.status_code,
+                resp.text[:200],
+            )
 
     @classmethod
     def get_default(cls) -> "Client | None":
@@ -263,32 +282,21 @@ class Client:
             raise
         finally:
             context.current_trace_id.reset(token_trace)
-            self.flush()
+            # No sync flush - the background thread will drain within flush_interval.
 
-    def flush(self) -> None:
-        if not self._buffer:
-            return
-        batch = self._buffer
-        self._buffer = []
-        try:
-            resp = self._http.post(
-                f"{self._host}/api/public/ingestion",
-                content=json.dumps({"batch": batch}, default=str),
-            )
-            if resp.status_code >= 400:
-                log.warning("mini_langfuse ingestion HTTP %s: %s", resp.status_code, resp.text[:200])
-        except Exception as exc:  # noqa: BLE001
-            log.warning("mini_langfuse flush failed: %s", exc)
+    def flush(self, timeout: float = 5.0) -> None:
+        """Block until pending events are drained (best effort)."""
+        self._flusher.flush(timeout=timeout)
 
     def close(self) -> None:
         try:
-            self.flush()
+            self._flusher.shutdown(timeout=5.0)
         finally:
             self._http.close()
 
     # -------- Internal --------
     def _enqueue(self, evt_type: str, body: dict[str, Any]) -> None:
-        self._buffer.append(
+        self._flusher.enqueue(
             {
                 "id": new_id("evt_"),
                 "type": evt_type,

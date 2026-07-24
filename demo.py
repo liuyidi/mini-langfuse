@@ -136,6 +136,37 @@ def main() -> None:
                 usage={"prompt_tokens": 420, "completion_tokens": 180},
             )
 
+    # ---- Traces 5-7: a 3-turn conversation grouped by session_id ----
+    # This is what makes the Sessions view interesting.
+    conv = "sess_conv_" + str(int(time.time()))
+    turns = [
+        ("What's the capital of France?", "Paris."),
+        ("Population?", "About 2.1 million in the city, ~11 million metro."),
+        ("Any famous museums?", "The Louvre, Musée d'Orsay, and Centre Pompidou."),
+    ]
+    for i, (q, a) in enumerate(turns, 1):
+        with client.trace(
+            name=f"chat-turn-{i}",
+            user_id="user_dave",
+            session_id=conv,
+            input={"question": q},
+            metadata={"turn": i},
+        ) as t:
+            with t.generation(
+                name="reply",
+                model="gpt-4o-mini",
+                input={"messages": [{"role": "user", "content": q}]},
+            ) as g:
+                time.sleep(0.15)
+                g.update(
+                    output={"role": "assistant", "content": a},
+                    usage={
+                        "prompt_tokens": 30 + i * 10,
+                        "completion_tokens": 10 + i * 4,
+                    },
+                )
+            t.update(output={"answer": a})
+
     client.close()
     print("Demo traces created. Open http://localhost:5173 to see them.")
 

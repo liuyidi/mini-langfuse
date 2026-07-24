@@ -9,7 +9,7 @@ Backend: **FastAPI + SQLAlchemy + SQLite**. Frontend: **React + Vite + TypeScrip
 
 - ✅ **Milestone 1** — End-to-end minimum loop: ingestion API, trace/observation model, tree view UI, working Python SDK, demo script.
 - ✅ **Milestone 2** — Generation cost calculation from built-in pricing table (OpenAI, Anthropic, Gemini); `@observe` decorator; `mini_langfuse.openai` drop-in wrapper; cost breakdown in UI.
-- ⏳ Milestone 3 — Session view & background flusher
+- ✅ **Milestone 3** — Session aggregation view; background flusher thread (non-blocking, atexit-safe); UI sessions list + conversation timeline.
 - ⏳ Milestone 4 — Scores & Prompt versioning
 - ⏳ Milestone 5 — Docker, polish, tests
 
@@ -135,7 +135,20 @@ All under HTTP Basic auth using the demo keys.
 | POST | `/api/public/ingestion` | Batch event upsert (trace/span/generation/event × create/update) |
 | GET | `/api/public/traces` | List traces with aggregate metrics |
 | GET | `/api/public/traces/:id` | Trace detail with tree of observations |
+| GET | `/api/public/sessions` | List sessions (aggregated by session_id) |
+| GET | `/api/public/sessions/:id` | Session detail with all traces in time order |
 | GET | `/health` | Liveness probe |
+
+## SDK internals — background flushing
+
+Since M3 the SDK no longer blocks on network. `Client._enqueue()` drops events into a bounded `queue.Queue`; a daemon thread batches them by size (default 50) or interval (1s) and POSTs to `/ingestion`. An `atexit` hook drains what's left when the interpreter exits, so short-lived scripts don't lose events. Ingestion failures are logged and swallowed — user code never sees them.
+
+You can tune it:
+
+```python
+Client(pk, sk, batch_size=100, flush_interval=0.5)  # more aggressive
+client.flush(timeout=5)  # block until queue drained (for tests / notebooks)
+```
 
 ## Learn more
 

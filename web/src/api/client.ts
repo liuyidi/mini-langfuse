@@ -57,6 +57,25 @@ export type TraceListResponse = {
   limit: number;
 };
 
+export type SessionSummary = {
+  session_id: string;
+  user_id: string | null;
+  trace_count: number;
+  first_trace_at: string;
+  last_trace_at: string;
+  total_tokens: number | null;
+  total_cost_usd: number | null;
+};
+
+export type SessionListResponse = {
+  data: SessionSummary[];
+  total: number;
+  page: number;
+  limit: number;
+};
+
+export type SessionDetail = SessionSummary & { traces: Trace[] };
+
 async function req<T>(path: string): Promise<T> {
   const r = await fetch(path, { headers: { Authorization: authHeader } });
   if (!r.ok) throw new Error(`${r.status} ${r.statusText}: ${await r.text()}`);
@@ -69,4 +88,9 @@ export const api = {
     return req<TraceListResponse>(`/api/public/traces${qs ? "?" + qs : ""}`);
   },
   getTrace: (id: string) => req<TraceDetail>(`/api/public/traces/${id}`),
+  listSessions: (params: Record<string, string> = {}) => {
+    const qs = new URLSearchParams(params).toString();
+    return req<SessionListResponse>(`/api/public/sessions${qs ? "?" + qs : ""}`);
+  },
+  getSession: (id: string) => req<SessionDetail>(`/api/public/sessions/${id}`),
 };

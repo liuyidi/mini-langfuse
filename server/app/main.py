@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 
 from .api import ingestion as ingestion_api
+from .api import sessions as sessions_api
 from .api import traces as traces_api
 from .config import settings
 from .db import Base, SessionLocal, engine
@@ -49,3 +50,4 @@ def health() -> dict[str, str]:
 
 app.include_router(ingestion_api.router)
 app.include_router(traces_api.router)
+app.include_router(sessions_api.router)
