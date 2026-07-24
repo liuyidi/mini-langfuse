@@ -11,37 +11,94 @@ Backend: **FastAPI + SQLAlchemy + SQLite**. Frontend: **React + Vite + TypeScrip
 - ✅ **Milestone 2** — Generation cost calculation from built-in pricing table (OpenAI, Anthropic, Gemini); `@observe` decorator; `mini_langfuse.openai` drop-in wrapper; cost breakdown in UI.
 - ✅ **Milestone 3** — Session aggregation view; background flusher thread (non-blocking, atexit-safe); UI sessions list + conversation timeline.
 - ✅ **Milestone 4** — Score API + inline scoring UI (numeric / boolean / categorical); versioned Prompts with mutable `production` label pointer; SDK `create_prompt`, `get_prompt(name, label=...)`, `PromptClient.compile(vars)`; Prompt diff viewer in UI; Generation → PromptVersion link.
-- ⏳ Milestone 5 — Docker, polish, tests
+- ✅ **Milestone 5** — `docker-compose up` deployment (multi-stage Node build → Nginx serving the SPA and proxying `/api/*` to the FastAPI container); pytest suite covering ingestion idempotency, cost math, tree building, prompt label movement, score validation, SDK contextvar isolation, flusher fault tolerance, and prompt compile.
+
+## Architecture
+
+```
+┌──────────────┐     HTTP     ┌──────────────┐         ┌────────────┐
+│ Your Python  │ ── Basic ──▶ │  FastAPI     │ ──SQL──▶│  SQLite    │
+│ app + SDK    │  ingestion   │  server      │         │  (or PG)   │
+│              │              │              │         └────────────┘
+│ • trace()    │              │ • auth       │
+│ • @observe   │              │ • ingest     │
+│ • .score()   │              │ • cost calc  │
+│ • .get_prompt│              │ • tree build │
+└──────────────┘              └──────┬───────┘
+       ▲                             │
+       │                       HTTP  │ REST
+       │                             ▼
+       │                     ┌──────────────┐
+       └─── prompts ─────────│ React + Vite │
+                             │ Tailwind SPA │
+                             │ /traces /sessions /prompts
+                             └──────────────┘
+```
+
+Data model highlights:
+- Observations are one **flat table** joined by `parent_observation_id` — allows partial updates and cheap tree reconstruction.
+- Sessions are an aggregation view, not a table — no start/end ambiguity.
+- Prompt `labels` (e.g. `production`) are **mutable pointers**; `version` is immutable. Promoting v2 to production auto-removes the label from v1.
+- Ingestion is idempotent per event id and processed **per-event under SQLite savepoints** — one bad event doesn't fail the batch.
 
 ## Repo layout
 
 ```
 mini-langfuse/
-├── server/         # FastAPI backend
-├── sdk-python/     # Python client SDK
-├── web/            # React + Vite frontend
-├── demo.py         # Generates sample traces
-└── mini-langfuse-plan.md
+├── server/                # FastAPI backend
+│   ├── app/               # models, schemas, api routes, services
+│   ├── tests/             # pytest suite
+│   └── Dockerfile
+├── sdk-python/            # Python client SDK
+│   ├── mini_langfuse/     # Client, decorators, flusher, openai wrapper, prompts
+│   └── tests/
+├── web/                   # React + Vite frontend
+│   ├── src/               # pages, components, api client
+│   ├── Dockerfile
+│   └── nginx.conf
+├── docker-compose.yml     # one-command deploy
+├── demo.py                # generates sample traces + prompts + scores
+└── mini-langfuse-plan.md  # full design doc
 ```
 
-## Quickstart (M1)
+## Quickstart — Docker (5-minute recommended path)
 
-Three terminals.
+```bash
+git clone https://github.com/liuyidi/mini-langfuse.git
+cd mini-langfuse
+docker compose up --build -d
+```
+
+- UI: http://localhost:8080
+- API: http://localhost:8000  (health probe: http://localhost:8000/health)
+- SQLite DB is persisted in the `mlf_data` volume.
+
+Then generate some traces (in a Python 3.10+ env):
+
+```bash
+cd sdk-python
+pip install -e .
+python ../demo.py
+```
+
+Reload the UI and you'll see 5 traces, a 3-turn session, 2 prompt versions with a `production` label, and 3 scores.
+
+Demo credentials (hardcoded — override via `MLF_DEMO_PUBLIC_KEY` / `MLF_DEMO_SECRET_KEY`):
+- `public_key = pk-lf-demo`
+- `secret_key = sk-lf-demo`
+
+## Quickstart — Dev mode (3 terminals, hot reload)
 
 ### 1. Backend
 
 ```bash
 cd server
 python -m venv .venv && source .venv/bin/activate
-pip install -e .
+pip install -e '.[dev]'
 uvicorn app.main:app --reload  # http://localhost:8000
 ```
 
 The first run creates a SQLite DB at `server/mini_langfuse.db` and seeds a demo project.
-
-Demo credentials (hardcoded for M1):
-- `public_key = pk-lf-demo`
-- `secret_key = sk-lf-demo`
 
 ### 2. Frontend
 
@@ -57,11 +114,11 @@ Vite proxies `/api/*` to the backend on `:8000`.
 
 ```bash
 cd sdk-python
-pip install -e .          # into the same virtualenv as the server, or a new one
+pip install -e .
 python ../demo.py
 ```
 
-Open http://localhost:5173 — you should see 4 traces. Click one to see the observation tree, click a span to see its input/output/metadata.
+Open http://localhost:5173.
 
 ## Using the SDK
 
@@ -203,6 +260,18 @@ You can tune it:
 Client(pk, sk, batch_size=100, flush_interval=0.5)  # more aggressive
 client.flush(timeout=5)  # block until queue drained (for tests / notebooks)
 ```
+
+## Testing
+
+```bash
+# Server (fastapi + sqlalchemy, uses in-memory-ish SQLite):
+cd server && pip install -e '.[dev]' && pytest
+
+# SDK (no server required — uses a stubbed HTTP layer):
+cd sdk-python && pip install -e . pytest && pytest
+```
+
+The server suite covers ingestion idempotency, tree building, cost math, prompt label movement, and score validation. The SDK suite covers contextvar isolation across nested spans, background flusher batching + fault tolerance, prompt variable substitution, and the async `@observe` path.
 
 ## Learn more
 
