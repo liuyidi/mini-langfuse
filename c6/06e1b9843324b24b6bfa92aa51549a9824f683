@@ -1,0 +1,74 @@
+server/app/config.py
+  s_6d7f85b34e18a1::t_518dd2583dbcfd 4,10-12,15-16
+scripts/dev.sh
+  s_6d7f85b34e18a1::t_ec239ed2eef76d 1-36
+web/src/pages/TraceListPage.tsx
+  s_6d7f85b34e18a1::t_238297d0f5015e 5,11,21,23-24
+server/app/api/streaming.py
+  s_6d7f85b34e18a1::t_65ec8e7db796d4 5,7,12,14-15,22-23,28-30,37-43
+web/vite.config.ts
+  s_6d7f85b34e18a1::t_e9b8cf7c2c4002 10
+  s_6d7f85b34e18a1::t_fa3f70fe049596 9
+server/app/models/session_web.py
+  s_6d7f85b34e18a1::t_26c837f792d9f1 24
+  s_6d7f85b34e18a1::t_11c14d283c975b 6
+  s_6d7f85b34e18a1::t_2ed5d256597022 4,22-23
+server/alembic/versions/2026_07_26_1100-002_m6_auth.py
+  s_6d7f85b34e18a1::t_189203ab163cec 82-86
+web/src/lib/useSSE.ts
+  s_6d7f85b34e18a1::t_9916cd8dd3f5f2 5-6,21,32-35,40-43,68,79,85
+server/app/models/prompt.py
+  s_6d7f85b34e18a1::t_3203193c93ef14 9,12,26-28,50-52
+web/package.json
+  s_6d7f85b34e18a1::t_db65406d1e9739 15-16
+server/app/models/project.py
+  s_6d7f85b34e18a1::t_5b3b2799773278 4,23-24
+  s_6d7f85b34e18a1::t_0afdc8fd84ffcc 7
+  s_6d7f85b34e18a1::t_0b07298f7a94bd 25
+server/app/models/user.py
+  s_6d7f85b34e18a1::t_1da4e10804e650 23
+  s_6d7f85b34e18a1::t_0cd1bc78105b6d 21-22
+  s_6d7f85b34e18a1::t_590dcd566470d8 7
+  s_6d7f85b34e18a1::t_f963f4b04a6581 4
+server/app/main.py
+  s_6d7f85b34e18a1::t_e881a60df01ce3 28-54
+server/app/models/trace.py
+  s_6d7f85b34e18a1::t_041253e9c1cc49 4,7,34,36-38
+server/app/models/observation.py
+  s_6d7f85b34e18a1::t_79c82177c0e2fc 4,7
+  s_6d7f85b34e18a1::t_3cfc0c27ee6e38 54-56
+server/app/services/auth.py
+  s_6d7f85b34e18a1::t_4a7c177014c2ab 12
+  s_6d7f85b34e18a1::t_5fa4534ba43941 45
+  s_6d7f85b34e18a1::t_4db3c5c7b7da4f 135
+  s_6d7f85b34e18a1::t_7579abce674721 61-65
+server/app/models/score.py
+  s_6d7f85b34e18a1::t_73047356280cac 5,8,34-36
+server/app/models/api_key.py
+  s_6d7f85b34e18a1::t_d367e916cc4d96 7
+  s_6d7f85b34e18a1::t_85fe20ff07ae1a 4,33-34
+  s_6d7f85b34e18a1::t_8bd5d27bd5deb2 35
+server/app/api/auth.py
+  s_6d7f85b34e18a1::t_63c51295387670 4
+  s_6d7f85b34e18a1::t_be8609de1fd36d 119,124,137
+server/app/models/organization.py
+  s_6d7f85b34e18a1::t_c55b30cf2ff41a 20
+  s_6d7f85b34e18a1::t_5016ccda0de6ce 4,18-19
+  s_6d7f85b34e18a1::t_cd2f868fac6c08 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.38-trip",
+  "base_commit_sha": "c606e1b9843324b24b6bfa92aa51549a9824f683",
+  "prompts": {},
+  "sessions": {
+    "s_6d7f85b34e18a1": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "88a3d5a1-260b-4346-82aa-244915858d5b",
+        "model": "default"
+      },
+      "human_author": "liuyidi <liuyidi1993@gmail.com>"
+    }
+  }
+}
