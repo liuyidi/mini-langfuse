@@ -95,9 +95,9 @@ function Sidebar() {
   };
 
   return (
-    <aside className="w-[220px] min-h-screen bg-white border-r border-neutral-200 flex flex-col">
+    <aside className="w-[220px] h-screen shrink-0 sticky top-0 bg-white border-r border-neutral-200 flex flex-col">
       {/* Logo */}
-      <div className="px-4 py-4 border-b border-neutral-100">
+      <div className="px-4 py-4 border-b border-neutral-100 shrink-0">
         <Link to="/" className="flex items-center gap-2 text-[15px] font-semibold tracking-tight text-neutral-900">
           <span className="text-lg">🔦</span>
           Mini Langfuse
@@ -105,7 +105,7 @@ function Sidebar() {
       </div>
 
       {/* Project Selector */}
-      <div className="px-3 py-3 border-b border-neutral-100">
+      <div className="px-3 py-3 border-b border-neutral-100 shrink-0">
         <select
           value={currentProject?.id || ""}
           onChange={(e) => {
@@ -120,8 +120,8 @@ function Sidebar() {
         </select>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-2 py-2 overflow-y-auto">
+      {/* Navigation — only this area scrolls if nav items overflow */}
+      <nav className="flex-1 min-h-0 px-2 py-2 overflow-y-auto">
         {/* Dashboard - top level */}
         <div className="space-y-0.5 mb-1">
           <NavItem to="/dashboard" icon={
@@ -222,7 +222,7 @@ function Sidebar() {
       </nav>
 
       {/* User Footer */}
-      <div className="px-3 py-3 border-t border-neutral-100">
+      <div className="px-3 py-3 border-t border-neutral-100 shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
             <div className="w-6 h-6 rounded-full bg-neutral-200 flex items-center justify-center text-[10px] font-medium text-neutral-600 shrink-0">
@@ -251,9 +251,9 @@ function Sidebar() {
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-neutral-50">
+    <div className="flex h-screen overflow-hidden bg-neutral-50">
       <Sidebar />
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 min-w-0 overflow-y-auto">
         {children}
       </main>
     </div>
