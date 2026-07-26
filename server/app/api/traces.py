@@ -1,11 +1,14 @@
-"""GET /api/public/traces and /api/public/traces/{id} — with advanced filtering (M18)."""
+"""GET /api/public/traces and /api/public/traces/{id} — with advanced filtering (M18) and export (M23)."""
 from __future__ import annotations
 
+import csv
+import io
 import json
 from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy import and_, case, func as sqlfunc, or_, select, text
 from sqlalchemy.orm import Session
 
@@ -298,6 +301,127 @@ def get_trace_facets(
         "models": [{"value": r.model, "count": int(r.count)} for r in models],
         "status_counts": {r.status: int(r.count) for r in status_counts if r.status},
     }
+
+
+@router.get("/export")
+def export_traces(
+    project_id: str = Depends(require_project),
+    db: Session = Depends(get_db),
+    format: str = Query(default="json", regex="^(json|csv)$"),
+    # All the same filters as list_traces
+    user_id: Optional[str] = Query(default=None, alias="userId"),
+    session_id: Optional[str] = Query(default=None, alias="sessionId"),
+    name: Optional[str] = Query(default=None),
+    from_timestamp: Optional[datetime] = Query(default=None, alias="fromTimestamp"),
+    to_timestamp: Optional[datetime] = Query(default=None, alias="toTimestamp"),
+    search: Optional[str] = Query(default=None),
+    tags: Optional[str] = Query(default=None),
+    model: Optional[str] = Query(default=None),
+    status: Optional[str] = Query(default=None),
+    limit: int = Query(default=1000, ge=1, le=10000),
+):
+    """Export traces as JSON or CSV with filters applied.
+
+    Supports the same filters as GET /traces (name, tags, userId, model, status,
+    search, time range). Max 10,000 traces per export.
+    """
+    conditions = [Trace.project_id == project_id]
+
+    if user_id:
+        conditions.append(Trace.user_id == user_id)
+    if session_id:
+        conditions.append(Trace.session_id == session_id)
+    if name:
+        conditions.append(Trace.name.ilike(f"%{name}%"))
+    if from_timestamp:
+        conditions.append(Trace.timestamp >= from_timestamp)
+    if to_timestamp:
+        conditions.append(Trace.timestamp <= to_timestamp)
+    if search:
+        search_term = f"%{search}%"
+        conditions.append(
+            or_(
+                Trace.name.ilike(search_term),
+                Trace.input.cast(text("TEXT")).ilike(search_term),
+                Trace.output.cast(text("TEXT")).ilike(search_term),
+            )
+        )
+    if model:
+        conditions.append(
+            Trace.id.in_(
+                select(Observation.trace_id).where(Observation.model.ilike(f"%{model}%"))
+            )
+        )
+    if status:
+        conditions.append(
+            Trace.id.in_(
+                select(Observation.trace_id).where(Observation.status == status)
+            )
+        )
+
+    traces = db.scalars(
+        select(Trace)
+        .where(*conditions)
+        .order_by(Trace.timestamp.desc())
+        .limit(limit)
+    ).all()
+
+    # Build output rows with aggregated metrics
+    rows = []
+    for tr in traces:
+        obs = db.scalars(select(Observation).where(Observation.trace_id == tr.id)).all()
+        agg = aggregate_metrics(tr, obs)
+        row = {**trace_to_dict(tr), **agg}
+        # Flatten JSON fields for CSV
+        if format == "csv":
+            if isinstance(row.get("input"), (dict, list)):
+                row["input"] = json.dumps(row["input"], ensure_ascii=False)
+            if isinstance(row.get("output"), (dict, list)):
+                row["output"] = json.dumps(row["output"], ensure_ascii=False)
+            if isinstance(row.get("metadata"), (dict, list)):
+                row["metadata"] = json.dumps(row["metadata"], ensure_ascii=False)
+            if isinstance(row.get("tags"), list):
+                row["tags"] = ",".join(row["tags"])
+        rows.append(row)
+
+    if format == "csv":
+        # Stream CSV
+        if not rows:
+            return StreamingResponse(
+                iter(["id,name,user_id,session_id,timestamp,duration_ms,total_tokens,total_cost_usd,observation_count\n"]),
+                media_type="text/csv",
+                headers={"Content-Disposition": "attachment; filename=traces.csv"},
+            )
+
+        fieldnames = [
+            "id", "name", "user_id", "session_id", "timestamp",
+            "duration_ms", "total_tokens", "total_cost_usd", "observation_count",
+            "input", "output", "metadata", "tags", "release", "version",
+        ]
+
+        def generate():
+            buf = io.StringIO()
+            writer = csv.DictWriter(buf, fieldnames=fieldnames, extrasaction="ignore")
+            writer.writeheader()
+            yield buf.getvalue()
+            buf.seek(0)
+            buf.truncate(0)
+
+            for row in rows:
+                writer.writerow(row)
+                yield buf.getvalue()
+                buf.seek(0)
+                buf.truncate(0)
+
+        return StreamingResponse(
+            generate(),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=traces.csv"},
+        )
+
+    else:
+        # JSON export
+        return rows
 
 
 @router.get("/{trace_id}", response_model=TraceDetail)
