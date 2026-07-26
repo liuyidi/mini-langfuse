@@ -4,10 +4,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Optional
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Index, String, func
+from sqlalchemy import DateTime, ForeignKey, Index, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..db import Base
+from ..types import JSONType
 
 
 class Trace(Base):
@@ -21,10 +22,10 @@ class Trace(Base):
     user_id: Mapped[Optional[str]] = mapped_column(String, index=True)
     session_id: Mapped[Optional[str]] = mapped_column(String, index=True)
 
-    input: Mapped[Optional[Any]] = mapped_column(JSON)
-    output: Mapped[Optional[Any]] = mapped_column(JSON)
-    metadata_: Mapped[Optional[Any]] = mapped_column("metadata", JSON)
-    tags: Mapped[Optional[Any]] = mapped_column(JSON)
+    input: Mapped[Optional[Any]] = mapped_column(JSONType)
+    output: Mapped[Optional[Any]] = mapped_column(JSONType)
+    metadata_: Mapped[Optional[Any]] = mapped_column("metadata", JSONType)
+    tags: Mapped[Optional[Any]] = mapped_column(JSONType)
 
     release: Mapped[Optional[str]] = mapped_column(String)
     version: Mapped[Optional[str]] = mapped_column(String)

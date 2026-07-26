@@ -1,18 +1,42 @@
 services:
+  # PostgreSQL database (M9)
+  db:
+    image: postgres:16-alpine
+    container_name: mlf-db
+    environment:
+      POSTGRES_DB: minilangfuse
+      POSTGRES_USER: mlf
+      POSTGRES_PASSWORD: mlf
+    volumes:
+      - mlf_pg:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mlf -d minilangfuse"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   server:
     build: ./server
     container_name: mlf-server
     ports:
       - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
-      MLF_DATABASE_URL: sqlite:////data/mini_langfuse.db
+      # PostgreSQL (M9) - use Postgres by default in docker-compose
+      MLF_DATABASE_URL: postgresql+psycopg://mlf:mlf@db:5432/minilangfuse
       # Comma-separated allowed origins. Loosely permissive for local demos.
       MLF_CORS_ORIGINS: "http://localhost:8080,http://127.0.0.1:8080,http://localhost:5173,http://127.0.0.1:5173"
       # Optional: pass through provider keys for the Playground (M8)
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
-    volumes:
-      - mlf_data:/data
+    # Run migrations before starting server (M9)
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
       interval: 10s
@@ -29,4 +53,4 @@ services:
         condition: service_healthy
 
 volumes:
-  mlf_data:
+  mlf_pg:

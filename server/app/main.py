@@ -14,7 +14,7 @@ from .api import scores as scores_api
 from .api import sessions as sessions_api
 from .api import traces as traces_api
 from .config import settings
-from .db import Base, SessionLocal, engine
+from .db import SessionLocal
 from .models import Project
 
 
@@ -29,8 +29,8 @@ def _ensure_demo_project() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # M1: use create_all instead of Alembic
-    Base.metadata.create_all(bind=engine)
+    # M9: Schema is managed by Alembic. Run `alembic upgrade head` before starting.
+    # For docker-compose, this is done automatically in the command.
     _ensure_demo_project()
     yield
 

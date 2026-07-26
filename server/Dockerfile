@@ -14,11 +14,15 @@ RUN pip install --no-cache-dir \
     "sqlalchemy>=2.0" \
     "pydantic>=2.7" \
     "pydantic-settings>=2.3" \
-    "python-ulid>=2.2"
+    "python-ulid>=2.2" \
+    "alembic>=1.13" \
+    "psycopg[binary]>=3.1"
 
 COPY app ./app
+COPY alembic.ini ./alembic.ini
+COPY alembic ./alembic
 
-# SQLite DB will live here; volume it in compose for persistence
+# Default to SQLite for local dev; override in docker-compose
 ENV MLF_DATABASE_URL=sqlite:////data/mini_langfuse.db
 VOLUME ["/data"]
 

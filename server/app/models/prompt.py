@@ -9,10 +9,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Optional
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, UniqueConstraint, func
+from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..db import Base
+from ..types import JSONType
 
 
 class Prompt(Base):
@@ -38,9 +39,9 @@ class PromptVersion(Base):
     version: Mapped[int] = mapped_column(Integer, nullable=False)
     # 'text' or 'chat'. Chat prompts store list of {role, content}.
     type: Mapped[str] = mapped_column(String, nullable=False)
-    content: Mapped[Any] = mapped_column(JSON, nullable=False)
-    config: Mapped[Optional[Any]] = mapped_column(JSON)     # model hints, variables etc.
-    labels: Mapped[Optional[Any]] = mapped_column(JSON)     # ["production", "staging", ...]
+    content: Mapped[Any] = mapped_column(JSONType, nullable=False)
+    config: Mapped[Optional[Any]] = mapped_column(JSONType)     # model hints, variables etc.
+    labels: Mapped[Optional[Any]] = mapped_column(JSONType)     # ["production", "staging", ...]
     commit_msg: Mapped[Optional[str]] = mapped_column(String)
     created_by: Mapped[Optional[str]] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(
