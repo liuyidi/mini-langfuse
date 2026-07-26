@@ -118,6 +118,15 @@ function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-2 overflow-y-auto">
+        {/* Dashboard - top level */}
+        <div className="space-y-0.5 mb-1">
+          <NavItem to="/dashboard" icon={
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
+              <path d="M2 14V6h3v8M6.5 14V2h3v12M11 14V8h3v6" />
+            </svg>
+          } label="Dashboard" />
+        </div>
+
         {/* Tracing */}
         <SectionLabel>Tracing</SectionLabel>
         <div className="space-y-0.5">
@@ -134,16 +143,6 @@ function Sidebar() {
               <rect x="9" y="9" width="5" height="5" rx="1" />
             </svg>
           } label="Sessions" />
-        </div>
-
-        {/* Analytics */}
-        <SectionLabel>Analytics</SectionLabel>
-        <div className="space-y-0.5">
-          <NavItem to="/dashboard" icon={
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
-              <path d="M2 14V6h3v8M6.5 14V2h3v12M11 14V8h3v6" />
-            </svg>
-          } label="Dashboard" />
         </div>
 
         {/* Prompts */}
