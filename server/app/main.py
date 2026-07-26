@@ -19,6 +19,7 @@ from .api import scores as scores_api
 from .api import sessions as sessions_api
 from .api import streaming as streaming_api
 from .api import traces as traces_api
+from .api import users as users_api
 from .config import settings
 from .db import SessionLocal
 from .models import ApiKey, Project
@@ -92,3 +93,4 @@ app.include_router(streaming_api.router)
 app.include_router(dashboard_api.router)
 app.include_router(evaluations_api.router)
 app.include_router(datasets_api.router)
+app.include_router(users_api.router)

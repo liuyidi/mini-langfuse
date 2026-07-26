@@ -16,6 +16,7 @@ import AnnotationQueuePage from "./pages/AnnotationQueuePage";
 import ScoresAnalyticsPage from "./pages/ScoresAnalyticsPage";
 import DatasetsPage from "./pages/DatasetsPage";
 import DatasetDetailPage from "./pages/DatasetDetailPage";
+import UsersAnalyticsPage from "./pages/UsersAnalyticsPage";
 import { AuthProvider, useAuth } from "./lib/auth";
 
 // =============================================================================
@@ -146,6 +147,12 @@ function Sidebar() {
               <rect x="9" y="9" width="5" height="5" rx="1" />
             </svg>
           } label="Sessions" />
+          <NavItem to="/users" icon={
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
+              <circle cx="8" cy="5" r="3" />
+              <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" />
+            </svg>
+          } label="Users" />
         </div>
 
         {/* Prompts */}
@@ -277,6 +284,7 @@ export default function App() {
                   <Route path="/traces/:id" element={<TraceDetailPage />} />
                   <Route path="/sessions" element={<SessionListPage />} />
                   <Route path="/sessions/:id" element={<SessionDetailPage />} />
+                  <Route path="/users" element={<UsersAnalyticsPage />} />
                   <Route path="/prompts" element={<PromptListPage />} />
                   <Route path="/prompts/:name" element={<PromptDetailPage />} />
                   <Route path="/prompts/:name/playground" element={<PromptPlaygroundPage />} />
