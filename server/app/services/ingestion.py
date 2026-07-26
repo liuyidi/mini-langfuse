@@ -15,6 +15,7 @@ from ..schemas.ingestion import (
     TraceBody,
 )
 from .cost import compute_cost
+from .event_bus import bus
 
 
 def _utcnow() -> datetime:
@@ -188,5 +189,19 @@ def process_batch(
             IngestionEventResult(id="__commit__", status="error", message=str(exc))
         )
         successes = []
+
+    # Publish events for successful trace/observation upserts (M10)
+    if successes:
+        trace_ids = set()
+        for evt in events:
+            if evt.type == "trace-create":
+                trace_ids.add(evt.body.get("id"))
+            elif evt.type in ("span-create", "span-update", "generation-create", "generation-update", "event-create"):
+                tid = evt.body.get("trace_id")
+                if tid:
+                    trace_ids.add(tid)
+
+        for trace_id in trace_ids:
+            bus.publish(project_id, "trace_upserted", {"trace_id": trace_id})
 
     return IngestionResponse(successes=successes, errors=errors)

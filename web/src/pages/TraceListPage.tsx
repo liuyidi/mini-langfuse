@@ -1,15 +1,47 @@
-import { useQuery } from "@tanstack/react-query";
+import { useCallback, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { api, Trace } from "../api/client";
 import { formatCost, formatDuration, formatNum, formatTime } from "../lib/format";
+import { useSSE } from "../lib/useSSE";
 
 export default function TraceListPage() {
+  const queryClient = useQueryClient();
+  const [newCount, setNewCount] = useState(0);
+
   const q = useQuery({ queryKey: ["traces"], queryFn: () => api.listTraces() });
+
+  // Handle new trace events from SSE
+  const handleTraceUpserted = useCallback(() => {
+    setNewCount((c) => c + 1);
+  }, []);
+
+  // Connect to SSE for real-time updates
+  useSSE({
+    enabled: true,
+    onTraceUpserted: handleTraceUpserted,
+  });
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["traces"] });
+    setNewCount(0);
+  };
 
   return (
     <div className="p-6">
       <div className="flex items-baseline justify-between mb-4">
-        <h1 className="text-xl font-semibold">Traces</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl font-semibold">Traces</h1>
+          {newCount > 0 && (
+            <button
+              onClick={handleRefresh}
+              className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-3 py-0.5 text-xs font-medium hover:bg-blue-100 transition-colors"
+            >
+              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+              {newCount} new trace{newCount > 1 ? "s" : ""}
+            </button>
+          )}
+        </div>
         <div className="text-sm text-neutral-500">
           {q.data ? `${q.data.total} total` : ""}
         </div>
