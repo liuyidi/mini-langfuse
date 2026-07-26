@@ -10,6 +10,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ApiKeysPage from "./pages/ApiKeysPage";
 import DashboardPage from "./pages/DashboardPage";
+import EvaluatorsPage from "./pages/EvaluatorsPage";
+import EvaluationRunsPage from "./pages/EvaluationRunsPage";
 import { AuthProvider, useAuth } from "./lib/auth";
 
 // Auth guard component
@@ -108,6 +110,14 @@ function Header() {
           >
             API Keys
           </NavLink>
+          <NavLink
+            to="/evaluations"
+            className={({ isActive }) =>
+              `hover:text-neutral-900 ${isActive ? "text-neutral-900 font-medium" : "text-neutral-600"}`
+            }
+          >
+            Evaluations
+          </NavLink>
         </nav>
       </div>
 
@@ -193,6 +203,8 @@ export default function App() {
                   <Route path="/prompts/:name" element={<PromptDetailPage />} />
                   <Route path="/prompts/:name/playground" element={<PromptPlaygroundPage />} />
                   <Route path="/api-keys" element={<ApiKeysPage />} />
+                  <Route path="/evaluations" element={<EvaluatorsPage />} />
+                  <Route path="/evaluations/runs" element={<EvaluationRunsPage />} />
                 </Routes>
               </MainLayout>
             </RequireAuth>
