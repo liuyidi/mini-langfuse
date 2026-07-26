@@ -5,20 +5,28 @@ import { api, Trace } from "../api/client";
 import { useAuth } from "../lib/auth";
 import { formatCost, formatDuration, formatNum, formatTime } from "../lib/format";
 import { useSSE } from "../lib/useSSE";
+import { useTraceFilters } from "../hooks/useTraceFilters";
+import TraceFilter from "../components/TraceFilter";
 
 export default function TraceListPage() {
   const queryClient = useQueryClient();
   const { currentProject } = useAuth();
   const [newCount, setNewCount] = useState(0);
+  const { filters, setFilters, clearFilters, toApiParams, hasActiveFilters } = useTraceFilters();
 
-  const q = useQuery({ queryKey: ["traces"], queryFn: () => api.listTraces() });
+  const apiParams = toApiParams();
+
+  const q = useQuery({
+    queryKey: ["traces", apiParams],
+    queryFn: () => api.listTraces(apiParams),
+  });
 
   // Handle new trace events from SSE
   const handleTraceUpserted = useCallback(() => {
     setNewCount((c) => c + 1);
   }, []);
 
-  // Connect to SSE for real-time updates (cookie session + project_id query)
+  // Connect to SSE for real-time updates
   useSSE({
     projectId: currentProject?.id,
     enabled: Boolean(currentProject?.id),
@@ -44,11 +52,24 @@ export default function TraceListPage() {
               {newCount} new trace{newCount > 1 ? "s" : ""}
             </button>
           )}
+          {hasActiveFilters && (
+            <span className="text-xs text-neutral-400">
+              {q.data?.total ?? 0} matching
+            </span>
+          )}
         </div>
         <div className="text-sm text-neutral-500">
-          {q.data ? `${q.data.total} total` : ""}
+          {!hasActiveFilters && q.data ? `${q.data.total} total` : ""}
         </div>
       </div>
+
+      {/* Filter bar */}
+      <TraceFilter
+        filters={filters}
+        onChange={setFilters}
+        onClear={clearFilters}
+        hasActiveFilters={hasActiveFilters}
+      />
 
       {q.isLoading && <div className="text-neutral-500">Loading…</div>}
       {q.isError && (
@@ -107,7 +128,9 @@ export default function TraceListPage() {
                     colSpan={8}
                     className="px-4 py-10 text-center text-neutral-400"
                   >
-                    No traces yet. Run <code className="font-mono text-neutral-600">python demo.py</code> from the repo root.
+                    {hasActiveFilters
+                      ? "No traces match your filters."
+                      : "No traces yet. Run python demo.py from the repo root."}
                   </td>
                 </tr>
               )}
