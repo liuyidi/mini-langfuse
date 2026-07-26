@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from ..auth import require_project
 from ..db import get_db
 from ..models import Score, Trace
-from ..schemas.score import ScoreCreate, ScoreListResponse, ScoreOut
+from ..schemas.score import ScoreCreate, ScoreListResponse, ScoreOut, ScoreUpdate
 
 router = APIRouter(prefix="/api/public/scores", tags=["scores"])
 
@@ -75,6 +75,8 @@ def list_scores(
     db: Session = Depends(get_db),
     trace_id: Optional[str] = Query(default=None, alias="traceId"),
     observation_id: Optional[str] = Query(default=None, alias="observationId"),
+    source: Optional[str] = Query(default=None, regex="^(HUMAN|API|EVAL)$"),
+    name: Optional[str] = Query(default=None),
     limit: int = Query(default=100, ge=1, le=500),
 ) -> ScoreListResponse:
     conds = [Score.project_id == project_id]
@@ -82,9 +84,57 @@ def list_scores(
         conds.append(Score.trace_id == trace_id)
     if observation_id:
         conds.append(Score.observation_id == observation_id)
+    if source:
+        conds.append(Score.source == source)
+    if name:
+        conds.append(Score.name == name)
 
     total = db.scalar(select(sqlfunc.count(Score.id)).where(*conds)) or 0
     rows = db.scalars(
         select(Score).where(*conds).order_by(Score.created_at.desc()).limit(limit)
     ).all()
     return ScoreListResponse(data=[_to_out(s) for s in rows], total=int(total))
+
+
+@router.patch("/{score_id}", response_model=ScoreOut)
+def update_score(
+    score_id: str,
+    payload: ScoreUpdate,
+    project_id: str = Depends(require_project),
+    db: Session = Depends(get_db),
+) -> ScoreOut:
+    """Update an existing score (for annotation corrections)."""
+    score = db.get(Score, score_id)
+    if score is None or score.project_id != project_id:
+        raise HTTPException(status_code=404, detail="Score not found")
+
+    if payload.name is not None:
+        score.name = payload.name
+    if payload.data_type is not None:
+        score.data_type = payload.data_type
+    if payload.value is not None:
+        score.value = payload.value
+    if payload.string_value is not None:
+        score.string_value = payload.string_value
+    if payload.comment is not None:
+        score.comment = payload.comment
+
+    db.commit()
+    db.refresh(score)
+    return _to_out(score)
+
+
+@router.delete("/{score_id}")
+def delete_score(
+    score_id: str,
+    project_id: str = Depends(require_project),
+    db: Session = Depends(get_db),
+):
+    """Delete a score."""
+    score = db.get(Score, score_id)
+    if score is None or score.project_id != project_id:
+        raise HTTPException(status_code=404, detail="Score not found")
+
+    db.delete(score)
+    db.commit()
+    return {"ok": True}

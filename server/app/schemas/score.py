@@ -35,6 +35,17 @@ class ScoreCreate(BaseModel):
         return self
 
 
+class ScoreUpdate(BaseModel):
+    """Partial update for scores (annotation corrections)."""
+    name: Optional[str] = None
+    data_type: Optional[ScoreDataType] = Field(default=None, alias="dataType")
+    value: Optional[float] = None
+    string_value: Optional[str] = Field(default=None, alias="stringValue")
+    comment: Optional[str] = None
+
+    model_config = ConfigDict(populate_by_name=True, extra="ignore")
+
+
 class ScoreOut(BaseModel):
     id: str
     trace_id: str

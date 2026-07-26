@@ -12,6 +12,7 @@ import ApiKeysPage from "./pages/ApiKeysPage";
 import DashboardPage from "./pages/DashboardPage";
 import EvaluatorsPage from "./pages/EvaluatorsPage";
 import EvaluationRunsPage from "./pages/EvaluationRunsPage";
+import AnnotationQueuePage from "./pages/AnnotationQueuePage";
 import { AuthProvider, useAuth } from "./lib/auth";
 
 // =============================================================================
@@ -174,6 +175,12 @@ function Sidebar() {
               <path d="M8 5v3l2 2" />
             </svg>
           } label="Runs" />
+          <NavItem to="/annotation" icon={
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
+              <path d="M2 12l3-8 3 8M3 9h4" />
+              <path d="M10 4h4v8" />
+            </svg>
+          } label="Annotation" />
         </div>
 
         {/* Settings */}
@@ -257,6 +264,7 @@ export default function App() {
                   <Route path="/api-keys" element={<ApiKeysPage />} />
                   <Route path="/evaluations" element={<EvaluatorsPage />} />
                   <Route path="/evaluations/runs" element={<EvaluationRunsPage />} />
+                  <Route path="/annotation" element={<AnnotationQueuePage />} />
                 </Routes>
               </MainLayout>
             </RequireAuth>
