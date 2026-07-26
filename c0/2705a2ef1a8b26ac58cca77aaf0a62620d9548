@@ -1,0 +1,20 @@
+web/src/App.tsx
+  s_6d7f85b34e18a1::t_09bf7467aba576 98,100,108,123-124,225
+  s_6d7f85b34e18a1::t_c51c1fbcd84388 254,256
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.38-trip",
+  "base_commit_sha": "c02705a2ef1a8b26ac58cca77aaf0a62620d9548",
+  "prompts": {},
+  "sessions": {
+    "s_6d7f85b34e18a1": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "88a3d5a1-260b-4346-82aa-244915858d5b",
+        "model": "default"
+      },
+      "human_author": "liuyidi <liuyidi1993@gmail.com>"
+    }
+  }
+}
