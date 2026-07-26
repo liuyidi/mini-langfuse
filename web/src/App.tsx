@@ -9,6 +9,7 @@ import PromptPlaygroundPage from "./pages/PromptPlaygroundPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ApiKeysPage from "./pages/ApiKeysPage";
+import DashboardPage from "./pages/DashboardPage";
 import { AuthProvider, useAuth } from "./lib/auth";
 
 // Auth guard component
@@ -74,6 +75,14 @@ function Header() {
             }
           >
             Traces
+          </NavLink>
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `hover:text-neutral-900 ${isActive ? "text-neutral-900 font-medium" : "text-neutral-600"}`
+            }
+          >
+            Dashboard
           </NavLink>
           <NavLink
             to="/sessions"
@@ -176,6 +185,7 @@ export default function App() {
               <MainLayout>
                 <Routes>
                   <Route path="/" element={<TraceListPage />} />
+                  <Route path="/dashboard" element={<DashboardPage />} />
                   <Route path="/traces/:id" element={<TraceDetailPage />} />
                   <Route path="/sessions" element={<SessionListPage />} />
                   <Route path="/sessions/:id" element={<SessionDetailPage />} />

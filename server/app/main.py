@@ -9,6 +9,7 @@ from sqlalchemy import select
 
 from .api import api_keys as api_keys_api
 from .api import auth as auth_api
+from .api import dashboard as dashboard_api
 from .api import ingestion as ingestion_api
 from .api import playground as playground_api
 from .api import prompts as prompts_api
@@ -78,3 +79,4 @@ app.include_router(scores_api.router)
 app.include_router(prompts_api.router)
 app.include_router(playground_api.router)
 app.include_router(streaming_api.router)
+app.include_router(dashboard_api.router)
