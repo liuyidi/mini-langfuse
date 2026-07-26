@@ -2,8 +2,10 @@
 
 Three providers:
 - mock (default): no API key, returns a deterministic fake response for demos
-- openai: uses OPENAI_API_KEY env var, calls the REST API directly
-- anthropic: uses ANTHROPIC_API_KEY env var, calls the REST API directly
+- openai: OpenAI-compatible Chat Completions (OPENAI / DeepSeek / etc.)
+  Keys: MLF_OPENAI_API_KEY or OPENAI_API_KEY
+  Base URL: MLF_OPENAI_BASE_URL or OPENAI_BASE_URL (default https://api.openai.com/v1)
+- anthropic: MLF_ANTHROPIC_API_KEY or ANTHROPIC_API_KEY
 
 Each returns a normalized dict:
     {
@@ -61,20 +63,30 @@ def _mock(messages: list[dict], model: str, params: dict) -> dict[str, Any]:
 
 
 def _openai(messages: list[dict], model: str, params: dict) -> dict[str, Any]:
-    api_key = os.environ.get("OPENAI_API_KEY")
+    from ..config import settings
+
+    api_key = (settings.openai_api_key or os.environ.get("OPENAI_API_KEY") or "").strip()
     if not api_key:
-        raise LLMError("OPENAI_API_KEY is not set on the server")
+        raise LLMError(
+            "OPENAI_API_KEY is not set on the server "
+            "(set MLF_OPENAI_API_KEY or OPENAI_API_KEY in server/.env)"
+        )
+    base = (
+        settings.openai_base_url
+        or os.environ.get("OPENAI_BASE_URL")
+        or "https://api.openai.com/v1"
+    ).rstrip("/")
     body = {"model": model, "messages": messages, **params}
     t0 = time.perf_counter()
     with httpx.Client(timeout=60.0) as h:
         r = h.post(
-            "https://api.openai.com/v1/chat/completions",
+            f"{base}/chat/completions",
             headers={"Authorization": f"Bearer {api_key}"},
             json=body,
         )
     latency_ms = (time.perf_counter() - t0) * 1000.0
     if r.status_code >= 400:
-        raise LLMError(f"OpenAI error {r.status_code}: {r.text[:500]}")
+        raise LLMError(f"OpenAI-compatible error {r.status_code}: {r.text[:500]}")
     data = r.json()
     choice = data["choices"][0]["message"]
     usage = data.get("usage", {}) or {}
@@ -91,9 +103,14 @@ def _openai(messages: list[dict], model: str, params: dict) -> dict[str, Any]:
 
 
 def _anthropic(messages: list[dict], model: str, params: dict) -> dict[str, Any]:
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    from ..config import settings
+
+    api_key = (settings.anthropic_api_key or os.environ.get("ANTHROPIC_API_KEY") or "").strip()
     if not api_key:
-        raise LLMError("ANTHROPIC_API_KEY is not set on the server")
+        raise LLMError(
+            "ANTHROPIC_API_KEY is not set on the server "
+            "(set MLF_ANTHROPIC_API_KEY or ANTHROPIC_API_KEY in server/.env)"
+        )
 
     # Anthropic requires system message split out from messages
     system_msg: str | None = None

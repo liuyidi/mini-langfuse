@@ -1,14 +1,18 @@
 """EvaluationResult model - individual score from an evaluation run (M-Eval)."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
-from sqlalchemy import DateTime, Float, ForeignKey, String, func
+from sqlalchemy import DateTime, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..db import Base
 from ..types import JSONType
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class EvaluationResult(Base):
@@ -40,5 +44,7 @@ class EvaluationResult(Base):
 
     error_message: Mapped[Optional[str]] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True),
+        default=_utcnow,
+        nullable=False,
     )

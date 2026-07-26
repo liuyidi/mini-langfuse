@@ -73,7 +73,23 @@ export default function EvaluatorsPage() {
 }
 
 function EvaluatorCard({ evaluator, onDelete }: { evaluator: Evaluator; onDelete: () => void }) {
+  const queryClient = useQueryClient();
   const config = evaluator.config;
+  const [running, setRunning] = useState(false);
+
+  const handleStartRun = async () => {
+    setRunning(true);
+    try {
+      await evaluationApi.createRun({ evaluator_id: evaluator.id, limit: 50 });
+      queryClient.invalidateQueries({ queryKey: ["evaluation-runs"] });
+      // Navigate via hard link so user sees the new run
+      window.location.href = `/evaluations/runs?evaluatorId=${evaluator.id}`;
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to start run");
+      setRunning(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg border border-neutral-200 p-4">
       <div className="flex items-start justify-between">
@@ -98,11 +114,18 @@ function EvaluatorCard({ evaluator, onDelete }: { evaluator: Evaluator; onDelete
           )}
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={handleStartRun}
+            disabled={running || !evaluator.is_active}
+            className="text-sm bg-blue-600 text-white rounded px-3 py-1 hover:bg-blue-700 disabled:opacity-50"
+          >
+            {running ? "Starting..." : "Start Run"}
+          </button>
           <Link
             to={`/evaluations/runs?evaluatorId=${evaluator.id}`}
             className="text-sm text-blue-600 hover:underline"
           >
-            Run →
+            View runs
           </Link>
           <button onClick={onDelete} className="text-sm text-red-600 hover:text-red-800">
             Delete
@@ -115,7 +138,7 @@ function EvaluatorCard({ evaluator, onDelete }: { evaluator: Evaluator; onDelete
 
 function CreateEvaluatorForm({ onCreated }: { onCreated: () => void }) {
   const [name, setName] = useState("");
-  const [model, setModel] = useState("gpt-4o-mini");
+  const [model, setModel] = useState("deepseek-v4-flash");
   const [provider, setProvider] = useState("openai");
   const [scoreMin, setScoreMin] = useState("1");
   const [scoreMax, setScoreMax] = useState("5");
@@ -170,10 +193,13 @@ function CreateEvaluatorForm({ onCreated }: { onCreated: () => void }) {
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-1">Provider</label>
           <select value={provider} onChange={(e) => setProvider(e.target.value)} className="w-full rounded border border-neutral-300 px-3 py-2 text-sm">
-            <option value="openai">OpenAI</option>
+            <option value="openai">OpenAI-compatible (OpenAI / DeepSeek)</option>
             <option value="anthropic">Anthropic</option>
             <option value="mock">Mock (demo)</option>
           </select>
+          <p className="text-xs text-neutral-400 mt-1">
+            Needs MLF_OPENAI_API_KEY (+ optional MLF_OPENAI_BASE_URL) in server/.env
+          </p>
         </div>
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-1">Model</label>

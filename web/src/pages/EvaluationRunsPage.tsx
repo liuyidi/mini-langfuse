@@ -48,6 +48,14 @@ export default function EvaluationRunsPage() {
             <Link to="/evaluations" className="text-blue-600 hover:underline">← Back to Evaluators</Link>
           </p>
         </div>
+        {evaluatorId && (
+          <button
+            onClick={() => handleCreateRun(evaluatorId)}
+            className="bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800"
+          >
+            Start new run
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -1,14 +1,18 @@
 """EvaluationRun model - a batch evaluation run over traces (M-Eval)."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, func
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..db import Base
 from ..types import JSONType
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class EvaluationRun(Base):
@@ -44,5 +48,7 @@ class EvaluationRun(Base):
     completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     created_by: Mapped[Optional[str]] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True),
+        default=_utcnow,
+        nullable=False,
     )

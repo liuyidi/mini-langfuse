@@ -1,14 +1,18 @@
 """Evaluator model - defines how to automatically score traces (M-Eval)."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
-from sqlalchemy import DateTime, ForeignKey, String, func
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..db import Base
 from ..types import JSONType
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class Evaluator(Base):
@@ -40,9 +44,15 @@ class Evaluator(Base):
     config: Mapped[dict[str, Any]] = mapped_column(JSONType, nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True)
     created_by: Mapped[Optional[str]] = mapped_column(String)
+    # Python-side defaults: SQLite has no working DEFAULT (now()).
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True),
+        default=_utcnow,
+        nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True),
+        default=_utcnow,
+        onupdate=_utcnow,
+        nullable=False,
     )

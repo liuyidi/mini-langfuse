@@ -21,6 +21,12 @@ class Settings(BaseSettings):
     demo_project_id: str = "proj_demo"
     demo_project_name: str = "demo"
 
+    # LLM for Playground + Eval (OpenAI-compatible; DeepSeek etc. via base_url)
+    # Env: MLF_OPENAI_API_KEY / MLF_OPENAI_BASE_URL (also falls back to OPENAI_* in llm_proxy)
+    openai_api_key: str = ""
+    openai_base_url: str = "https://api.openai.com/v1"
+    anthropic_api_key: str = ""
+
     # CORS - list or comma-separated string (env var: MLF_CORS_ORIGINS)
     cors_origins: Union[list[str], str] = [
         "http://localhost:5173",
@@ -35,7 +41,11 @@ class Settings(BaseSettings):
             return [x.strip() for x in v.split(",") if x.strip()]
         return v
 
-    model_config = SettingsConfigDict(env_prefix="MLF_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="MLF_",
+        env_file=str(_SERVER_ROOT / ".env"),
+        extra="ignore",
+    )
 
 
 settings = Settings()
