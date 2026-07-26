@@ -1,0 +1,38 @@
+{
+  "name": "@mini-langfuse/js",
+  "version": "0.1.0",
+  "description": "Mini Langfuse JavaScript/TypeScript SDK for LLM observability",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "test": "node --test tests/*.test.mjs",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "langfuse",
+    "llm",
+    "observability",
+    "tracing",
+    "openai",
+    "anthropic"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  }
+}
