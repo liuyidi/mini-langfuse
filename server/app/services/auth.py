@@ -9,7 +9,7 @@ import bcrypt
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from .models import ApiKey, User, WebSession
+from ..models import ApiKey, User, WebSession
 
 
 # =============================================================================
@@ -42,6 +42,7 @@ def create_session(db: Session, user_id: str, hours: int = SESSION_DURATION_HOUR
         token=token,
         user_id=user_id,
         expires_at=expires_at,
+        created_at=datetime.now(timezone.utc),
     )
     db.add(session)
     db.commit()
@@ -57,8 +58,11 @@ def validate_session(db: Session, token: str) -> Optional[User]:
     if session is None:
         return None
 
-    # Check expiration
-    if session.expires_at < datetime.now(timezone.utc):
+    # SQLite often returns naive datetimes; normalize before comparing.
+    expires_at = session.expires_at
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if expires_at < datetime.now(timezone.utc):
         # Clean up expired session
         db.delete(session)
         db.commit()
@@ -128,6 +132,7 @@ def create_user(
         email=email,
         password_hash=hash_password(password),
         name=name,
+        created_at=datetime.now(timezone.utc),
     )
     db.add(user)
     db.commit()

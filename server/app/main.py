@@ -25,25 +25,33 @@ from .services.auth import hash_password
 
 def _ensure_demo_project() -> None:
     """Insert the demo project row and API key if missing (M1/M6 compatibility)."""
-    with SessionLocal() as db:
-        # Ensure demo project exists
-        existing = db.scalar(select(Project).where(Project.id == settings.demo_project_id))
-        if existing is None:
-            db.add(Project(id=settings.demo_project_id, name=settings.demo_project_name))
-            db.commit()
+    try:
+        with SessionLocal() as db:
+            # Ensure demo project exists
+            existing = db.scalar(select(Project).where(Project.id == settings.demo_project_id))
+            if existing is None:
+                db.add(Project(id=settings.demo_project_id, name=settings.demo_project_name))
+                db.commit()
 
-        # Ensure demo API key exists for backward compatibility
-        demo_pk = settings.demo_public_key
-        existing_key = db.scalar(select(ApiKey).where(ApiKey.public_key == demo_pk))
-        if existing_key is None:
-            db.add(ApiKey(
-                id="key_demo",
-                project_id=settings.demo_project_id,
-                public_key=demo_pk,
-                secret_hash=hash_password(settings.demo_secret_key),
-                note="Demo API key (pk-lf-demo / sk-lf-demo)",
-            ))
-            db.commit()
+            # Ensure demo API key exists for backward compatibility
+            demo_pk = settings.demo_public_key
+            existing_key = db.scalar(select(ApiKey).where(ApiKey.public_key == demo_pk))
+            if existing_key is None:
+                db.add(ApiKey(
+                    id="key_demo",
+                    project_id=settings.demo_project_id,
+                    public_key=demo_pk,
+                    secret_hash=hash_password(settings.demo_secret_key),
+                    note="Demo API key (pk-lf-demo / sk-lf-demo)",
+                ))
+                db.commit()
+    except Exception as exc:  # noqa: BLE001 — schema may lag behind models during upgrades
+        import logging
+
+        logging.getLogger("mini_langfuse").warning(
+            "demo project seed skipped (%s). Run alembic upgrade / create_all.",
+            exc,
+        )
 
 
 @asynccontextmanager

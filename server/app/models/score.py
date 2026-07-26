@@ -2,10 +2,10 @@
 (and optionally a specific Observation) from HUMAN / API / EVAL sources."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
-from sqlalchemy import DateTime, Float, ForeignKey, Index, String, func
+from sqlalchemy import DateTime, Float, ForeignKey, Index, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..db import Base
@@ -31,7 +31,9 @@ class Score(Base):
     source: Mapped[str] = mapped_column(String, nullable=False)         # HUMAN / API / EVAL
     comment: Mapped[Optional[str]] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
 
 

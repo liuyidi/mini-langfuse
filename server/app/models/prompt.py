@@ -6,10 +6,10 @@ is the mutable pointer used to pin production without redeploying code.
 """
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint, func
+from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..db import Base
@@ -23,7 +23,9 @@ class Prompt(Base):
     project_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
 
     __table_args__ = (UniqueConstraint("project_id", "name", name="uq_prompts_project_name"),)
@@ -45,7 +47,9 @@ class PromptVersion(Base):
     commit_msg: Mapped[Optional[str]] = mapped_column(String)
     created_by: Mapped[Optional[str]] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
 
     __table_args__ = (UniqueConstraint("prompt_id", "version", name="uq_prompt_versions"),)

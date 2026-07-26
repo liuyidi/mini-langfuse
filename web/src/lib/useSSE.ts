@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
 type SSEOptions = {
+  /** Project to subscribe to (required for the stream endpoint) */
+  projectId?: string | null;
   /** Whether to connect immediately (default: true) */
   enabled?: boolean;
   /** Callback when a trace_upserted event is received */
@@ -16,7 +18,7 @@ type SSEState = {
 };
 
 export function useSSE(options: SSEOptions = {}) {
-  const { enabled = true, onTraceUpserted, onConnected } = options;
+  const { projectId, enabled = true, onTraceUpserted, onConnected } = options;
   const [state, setState] = useState<SSEState>({ isConnected: false, error: null });
   const eventSourceRef = useRef<EventSource | null>(null);
   const callbacksRef = useRef({ onTraceUpserted, onConnected });
@@ -27,14 +29,18 @@ export function useSSE(options: SSEOptions = {}) {
   }, [onTraceUpserted, onConnected]);
 
   const connect = useCallback(() => {
+    if (!projectId) {
+      return;
+    }
+
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
     }
 
-    const es = new EventSource("/api/ui/stream", {
-      // Note: EventSource doesn't support custom headers,
-      // so we rely on cookie auth for the SSE endpoint
-    });
+    // Cookie auth only — EventSource cannot send Authorization headers.
+    const es = new EventSource(
+      `/api/ui/stream?project_id=${encodeURIComponent(projectId)}`,
+    );
 
     es.onopen = () => {
       setState({ isConnected: true, error: null });
@@ -59,7 +65,7 @@ export function useSSE(options: SSEOptions = {}) {
     };
 
     eventSourceRef.current = es;
-  }, []);
+  }, [projectId]);
 
   const disconnect = useCallback(() => {
     if (eventSourceRef.current) {
@@ -70,13 +76,13 @@ export function useSSE(options: SSEOptions = {}) {
   }, []);
 
   useEffect(() => {
-    if (enabled) {
+    if (enabled && projectId) {
       connect();
     }
     return () => {
       disconnect();
     };
-  }, [enabled, connect, disconnect]);
+  }, [enabled, projectId, connect, disconnect]);
 
   return {
     ...state,

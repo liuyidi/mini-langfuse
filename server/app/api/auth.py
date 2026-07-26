@@ -1,6 +1,7 @@
 """Auth API - registration, login, logout, current user (M6)."""
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
@@ -115,10 +116,12 @@ def register(req: RegisterRequest, response: Response, db: Session = Depends(get
     # First user gets a default org + project
     org_count = db.scalar(select(Organization)) or 0
     if org_count == 0:
+        now = datetime.now(timezone.utc)
         # Create default org
         org = Organization(
             id=f"org_{user.id}",
             name=f"{req.name or req.email}'s Organization",
+            created_at=now,
         )
         db.add(org)
 
@@ -131,6 +134,7 @@ def register(req: RegisterRequest, response: Response, db: Session = Depends(get
             id=f"proj_{user.id[:8]}",
             name="default",
             org_id=org.id,
+            created_at=now,
         )
         db.add(project)
         db.commit()

@@ -1,10 +1,10 @@
 """Trace model."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
-from sqlalchemy import DateTime, ForeignKey, Index, String, func
+from sqlalchemy import DateTime, ForeignKey, Index, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..db import Base
@@ -31,8 +31,11 @@ class Trace(Base):
     version: Mapped[Optional[str]] = mapped_column(String)
 
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    # Python-side default: SQLite has no working server DEFAULT (now()) after recreate.
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
 
 

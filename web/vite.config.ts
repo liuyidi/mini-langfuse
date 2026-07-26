@@ -6,7 +6,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/api": "http://localhost:8000",
+      // Default to 8002 if a stale process owns :8000 without auth routes.
+      "/api": process.env.MLF_API_PROXY || "http://127.0.0.1:8005",
     },
   },
 });

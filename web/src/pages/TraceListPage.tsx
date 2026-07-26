@@ -2,11 +2,13 @@ import { useCallback, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { api, Trace } from "../api/client";
+import { useAuth } from "../lib/auth";
 import { formatCost, formatDuration, formatNum, formatTime } from "../lib/format";
 import { useSSE } from "../lib/useSSE";
 
 export default function TraceListPage() {
   const queryClient = useQueryClient();
+  const { currentProject } = useAuth();
   const [newCount, setNewCount] = useState(0);
 
   const q = useQuery({ queryKey: ["traces"], queryFn: () => api.listTraces() });
@@ -16,9 +18,10 @@ export default function TraceListPage() {
     setNewCount((c) => c + 1);
   }, []);
 
-  // Connect to SSE for real-time updates
+  // Connect to SSE for real-time updates (cookie session + project_id query)
   useSSE({
-    enabled: true,
+    projectId: currentProject?.id,
+    enabled: Boolean(currentProject?.id),
     onTraceUpserted: handleTraceUpserted,
   });
 

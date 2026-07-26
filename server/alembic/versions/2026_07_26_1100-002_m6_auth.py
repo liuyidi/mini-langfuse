@@ -79,10 +79,11 @@ def upgrade() -> None:
     )
     op.create_index('ix_sessions_web_user_id', 'sessions_web', ['user_id'])
 
-    # Add org_id to projects table
-    op.add_column('projects', sa.Column('org_id', sa.String(), nullable=True))
-    op.create_index('ix_projects_org_id', 'projects', ['org_id'])
-    op.create_foreign_key('fk_projects_org_id', 'projects', 'organizations', ['org_id'], ['id'])
+    # Add org_id to projects table (SQLite needs batch mode for FK constraints)
+    with op.batch_alter_table('projects') as batch_op:
+        batch_op.add_column(sa.Column('org_id', sa.String(), nullable=True))
+        batch_op.create_index('ix_projects_org_id', ['org_id'])
+        batch_op.create_foreign_key('fk_projects_org_id', 'organizations', ['org_id'], ['id'])
 
 
 def downgrade() -> None:

@@ -1,15 +1,19 @@
 """Configuration."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Union
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+_SERVER_ROOT = Path(__file__).resolve().parent.parent
+_DEFAULT_DB = _SERVER_ROOT / "mini_langfuse.db"
+
 
 class Settings(BaseSettings):
-    # DB
-    database_url: str = "sqlite:///./mini_langfuse.db"
+    # DB — absolute default so cwd (uvicorn reload) cannot point at another sqlite file
+    database_url: str = f"sqlite:///{_DEFAULT_DB}"
 
     # Demo auth (M1: single hardcoded key pair; real auth in later milestones)
     demo_public_key: str = "pk-lf-demo"
