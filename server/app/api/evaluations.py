@@ -1,4 +1,4 @@
-"""Evaluation APIs - create and manage evaluators + evaluation runs (M-Eval)."""
+"""Evaluation APIs - create and manage evaluators + evaluation runs (M-Eval, M17 templates)."""
 from __future__ import annotations
 
 import secrets
@@ -22,8 +22,43 @@ from ..schemas.evaluation import (
     EvaluatorUpdate,
 )
 from ..services.evaluation import start_evaluation_async
+from ..services.evaluator_templates import (
+    TEMPLATES,
+    get_template,
+    get_templates_by_category,
+    template_to_dict,
+)
 
 router = APIRouter(prefix="/api/public", tags=["evaluations"])
+
+
+# =============================================================================
+# Evaluator Templates (M17)
+# =============================================================================
+
+@router.get("/evaluator-templates")
+def list_evaluator_templates():
+    """List all available evaluator templates grouped by category.
+
+    Returns templates organized by category (Quality, Safety, Relevance, Custom).
+    """
+    by_category = get_templates_by_category()
+    return {
+        "categories": {
+            cat: [template_to_dict(t) for t in templates]
+            for cat, templates in by_category.items()
+        },
+        "total": len(TEMPLATES),
+    }
+
+
+@router.get("/evaluator-templates/{template_id}")
+def get_evaluator_template(template_id: str):
+    """Get a specific evaluator template by ID."""
+    template = get_template(template_id)
+    if template is None:
+        raise HTTPException(status_code=404, detail="Template not found")
+    return template_to_dict(template)
 
 
 # =============================================================================
