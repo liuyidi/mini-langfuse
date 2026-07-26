@@ -1,5 +1,9 @@
 """ORM models package."""
 from .api_key import ApiKey
+from .dataset import Dataset
+from .dataset_item import DatasetItem
+from .dataset_run import DatasetRun
+from .dataset_run_item import DatasetRunItem
 from .evaluation_result import EvaluationResult
 from .evaluation_run import EvaluationRun
 from .evaluator import Evaluator
@@ -15,6 +19,10 @@ from .user import User
 
 __all__ = [
     "ApiKey",
+    "Dataset",
+    "DatasetItem",
+    "DatasetRun",
+    "DatasetRunItem",
     "EvaluationResult",
     "EvaluationRun",
     "Evaluator",

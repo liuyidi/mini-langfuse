@@ -15,6 +15,10 @@ from app.config import settings
 # Import all models to ensure they are registered with Base.metadata
 from app.models import (  # noqa: F401
     api_key,
+    dataset,
+    dataset_item,
+    dataset_run,
+    dataset_run_item,
     evaluation_result,
     evaluation_run,
     evaluator,

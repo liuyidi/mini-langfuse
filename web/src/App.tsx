@@ -14,6 +14,8 @@ import EvaluatorsPage from "./pages/EvaluatorsPage";
 import EvaluationRunsPage from "./pages/EvaluationRunsPage";
 import AnnotationQueuePage from "./pages/AnnotationQueuePage";
 import ScoresAnalyticsPage from "./pages/ScoresAnalyticsPage";
+import DatasetsPage from "./pages/DatasetsPage";
+import DatasetDetailPage from "./pages/DatasetDetailPage";
 import { AuthProvider, useAuth } from "./lib/auth";
 
 // =============================================================================
@@ -188,6 +190,18 @@ function Sidebar() {
           } label="Annotation" />
         </div>
 
+        {/* Datasets */}
+        <SectionLabel>Datasets</SectionLabel>
+        <div className="space-y-0.5">
+          <NavItem to="/datasets" icon={
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
+              <ellipse cx="8" cy="4" rx="6" ry="2" />
+              <path d="M2 4v4c0 1.1 2.7 2 6 2s6-.9 6-2V4" />
+              <path d="M2 8v4c0 1.1 2.7 2 6 2s6-.9 6-2V8" />
+            </svg>
+          } label="Datasets" />
+        </div>
+
         {/* Settings */}
         <SectionLabel>Settings</SectionLabel>
         <div className="space-y-0.5">
@@ -271,6 +285,8 @@ export default function App() {
                   <Route path="/evaluations/runs" element={<EvaluationRunsPage />} />
                   <Route path="/annotation" element={<AnnotationQueuePage />} />
                   <Route path="/scores" element={<ScoresAnalyticsPage />} />
+                  <Route path="/datasets" element={<DatasetsPage />} />
+                  <Route path="/datasets/:id" element={<DatasetDetailPage />} />
                 </Routes>
               </MainLayout>
             </RequireAuth>
