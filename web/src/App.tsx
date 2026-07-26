@@ -13,6 +13,7 @@ import DashboardPage from "./pages/DashboardPage";
 import EvaluatorsPage from "./pages/EvaluatorsPage";
 import EvaluationRunsPage from "./pages/EvaluationRunsPage";
 import AnnotationQueuePage from "./pages/AnnotationQueuePage";
+import ScoresAnalyticsPage from "./pages/ScoresAnalyticsPage";
 import { AuthProvider, useAuth } from "./lib/auth";
 
 // =============================================================================
@@ -163,6 +164,11 @@ function Sidebar() {
         {/* Evaluation */}
         <SectionLabel>Evaluation</SectionLabel>
         <div className="space-y-0.5">
+          <NavItem to="/scores" icon={
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
+              <path d="M2 10l3-3 3 3 4-5 2 2" />
+            </svg>
+          } label="Scores" />
           <NavItem to="/evaluations" icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <path d="M8 2l1.5 3.5L13 6l-2.5 2.5L11 12 8 10l-3 2 .5-3.5L3 6l3.5-.5L8 2z" />
@@ -264,6 +270,7 @@ export default function App() {
                   <Route path="/evaluations" element={<EvaluatorsPage />} />
                   <Route path="/evaluations/runs" element={<EvaluationRunsPage />} />
                   <Route path="/annotation" element={<AnnotationQueuePage />} />
+                  <Route path="/scores" element={<ScoresAnalyticsPage />} />
                 </Routes>
               </MainLayout>
             </RequireAuth>
