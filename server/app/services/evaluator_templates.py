@@ -24,7 +24,7 @@ class EvaluatorTemplate:
     description: str
     category: str  # "Quality" | "Safety" | "Relevance" | "Custom"
     prompt_template: str
-    score_type: str  # NUMERIC | CATEGORICAL | BOOLEAN
+    score_type: str = "NUMERIC"  # NUMERIC | CATEGORICAL | BOOLEAN
     score_min: float = 1
     score_max: float = 5
     default_model: str = "gpt-4o-mini"
