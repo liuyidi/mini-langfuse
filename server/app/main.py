@@ -7,6 +7,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 
+from .api import api_keys as api_keys_api
+from .api import auth as auth_api
 from .api import ingestion as ingestion_api
 from .api import playground as playground_api
 from .api import prompts as prompts_api
@@ -15,15 +17,30 @@ from .api import sessions as sessions_api
 from .api import traces as traces_api
 from .config import settings
 from .db import SessionLocal
-from .models import Project
+from .models import ApiKey, Project
+from .services.auth import hash_password
 
 
 def _ensure_demo_project() -> None:
-    """Insert the demo project row if missing (M1 single-tenant)."""
+    """Insert the demo project row and API key if missing (M1/M6 compatibility)."""
     with SessionLocal() as db:
+        # Ensure demo project exists
         existing = db.scalar(select(Project).where(Project.id == settings.demo_project_id))
         if existing is None:
             db.add(Project(id=settings.demo_project_id, name=settings.demo_project_name))
+            db.commit()
+
+        # Ensure demo API key exists for backward compatibility
+        demo_pk = settings.demo_public_key
+        existing_key = db.scalar(select(ApiKey).where(ApiKey.public_key == demo_pk))
+        if existing_key is None:
+            db.add(ApiKey(
+                id="key_demo",
+                project_id=settings.demo_project_id,
+                public_key=demo_pk,
+                secret_hash=hash_password(settings.demo_secret_key),
+                note="Demo API key (pk-lf-demo / sk-lf-demo)",
+            ))
             db.commit()
 
 
@@ -51,6 +68,8 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
+app.include_router(auth_api.router)
+app.include_router(api_keys_api.router)
 app.include_router(ingestion_api.router)
 app.include_router(traces_api.router)
 app.include_router(sessions_api.router)

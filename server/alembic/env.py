@@ -13,7 +13,18 @@ from app.db import Base
 from app.config import settings
 
 # Import all models to ensure they are registered with Base.metadata
-from app.models import project, trace, observation, prompt, score  # noqa: F401
+from app.models import (  # noqa: F401
+    api_key,
+    membership,
+    observation,
+    organization,
+    project,
+    prompt,
+    score,
+    session_web,
+    trace,
+    user,
+)
 
 # Alembic Config object
 config = context.config
