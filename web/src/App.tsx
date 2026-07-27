@@ -18,6 +18,7 @@ import DatasetsPage from "./pages/DatasetsPage";
 import DatasetDetailPage from "./pages/DatasetDetailPage";
 import UsersAnalyticsPage from "./pages/UsersAnalyticsPage";
 import { AuthProvider, useAuth } from "./lib/auth";
+import { I18nProvider, LanguageSwitcher, useI18n } from "./lib/i18n";
 
 // =============================================================================
 // Auth guards
@@ -25,14 +26,16 @@ import { AuthProvider, useAuth } from "./lib/auth";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
-  if (isLoading) return <div className="min-h-screen flex items-center justify-center text-neutral-500">Loading...</div>;
+  const { t } = useI18n();
+  if (isLoading) return <div className="min-h-screen flex items-center justify-center text-neutral-500">{t("app.loading")}</div>;
   if (!user) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 
 function RedirectIfAuth({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
-  if (isLoading) return <div className="min-h-screen flex items-center justify-center text-neutral-500">Loading...</div>;
+  const { t } = useI18n();
+  if (isLoading) return <div className="min-h-screen flex items-center justify-center text-neutral-500">{t("app.loading")}</div>;
   if (user) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
@@ -88,6 +91,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function Sidebar() {
   const { user, projects, currentProject, setCurrentProject, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const handleLogout = async () => {
     await logout();
@@ -98,10 +102,13 @@ function Sidebar() {
     <aside className="w-[220px] h-screen shrink-0 sticky top-0 bg-white border-r border-neutral-200 flex flex-col">
       {/* Logo */}
       <div className="px-4 py-4 border-b border-neutral-100 shrink-0">
-        <Link to="/" className="flex items-center gap-2 text-[15px] font-semibold tracking-tight text-neutral-900">
-          <span className="text-lg">🔦</span>
-          Mini Langfuse
-        </Link>
+        <div className="flex items-center justify-between gap-2">
+          <Link to="/" className="flex items-center gap-2 text-[15px] font-semibold tracking-tight text-neutral-900">
+            <span className="text-lg">🔦</span>
+            Mini Langfuse
+          </Link>
+          <LanguageSwitcher />
+        </div>
       </div>
 
       {/* Project Selector */}
@@ -128,17 +135,17 @@ function Sidebar() {
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <path d="M2 14V6h3v8M6.5 14V2h3v12M11 14V8h3v6" />
             </svg>
-          } label="Dashboard" />
+          } label={t("nav.dashboard")} />
         </div>
 
         {/* Tracing */}
-        <SectionLabel>Tracing</SectionLabel>
+        <SectionLabel>{t("nav.tracing")}</SectionLabel>
         <div className="space-y-0.5">
           <NavItem to="/" end icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <path d="M2 4h12M2 8h12M2 12h8" />
             </svg>
-          } label="Traces" />
+          } label={t("nav.traces")} />
           <NavItem to="/sessions" icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <rect x="2" y="2" width="5" height="5" rx="1" />
@@ -146,59 +153,59 @@ function Sidebar() {
               <rect x="2" y="9" width="5" height="5" rx="1" />
               <rect x="9" y="9" width="5" height="5" rx="1" />
             </svg>
-          } label="Sessions" />
+          } label={t("nav.sessions")} />
           <NavItem to="/users" icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <circle cx="8" cy="5" r="3" />
               <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" />
             </svg>
-          } label="Users" />
+          } label={t("nav.users")} />
         </div>
 
         {/* Prompts */}
-        <SectionLabel>Prompts</SectionLabel>
+        <SectionLabel>{t("nav.promptsSection")}</SectionLabel>
         <div className="space-y-0.5">
           <NavItem to="/prompts" icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <path d="M3 3h10v2H3zM3 7h7v2H3zM3 11h10v2H3z" />
             </svg>
-          } label="Prompts" />
+          } label={t("nav.prompts")} />
           <NavItem to="/prompts/default/playground" icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <path d="M4 2l8 6-8 6V2z" />
             </svg>
-          } label="Playground" />
+          } label={t("nav.playground")} />
         </div>
 
         {/* Evaluation */}
-        <SectionLabel>Evaluation</SectionLabel>
+        <SectionLabel>{t("nav.evaluation")}</SectionLabel>
         <div className="space-y-0.5">
           <NavItem to="/scores" icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <path d="M2 10l3-3 3 3 4-5 2 2" />
             </svg>
-          } label="Scores" />
+          } label={t("nav.scores")} />
           <NavItem to="/evaluations" icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <path d="M8 2l1.5 3.5L13 6l-2.5 2.5L11 12 8 10l-3 2 .5-3.5L3 6l3.5-.5L8 2z" />
             </svg>
-          } label="Evaluators" />
+          } label={t("nav.evaluators")} />
           <NavItem to="/evaluations/runs" icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <circle cx="8" cy="8" r="6" />
               <path d="M8 5v3l2 2" />
             </svg>
-          } label="Runs" />
+          } label={t("nav.runs")} />
           <NavItem to="/annotation" icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <path d="M2 12l3-8 3 8M3 9h4" />
               <path d="M10 4h4v8" />
             </svg>
-          } label="Annotation" />
+          } label={t("nav.annotation")} />
         </div>
 
         {/* Datasets */}
-        <SectionLabel>Datasets</SectionLabel>
+        <SectionLabel>{t("nav.datasetsSection")}</SectionLabel>
         <div className="space-y-0.5">
           <NavItem to="/datasets" icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
@@ -206,18 +213,18 @@ function Sidebar() {
               <path d="M2 4v4c0 1.1 2.7 2 6 2s6-.9 6-2V4" />
               <path d="M2 8v4c0 1.1 2.7 2 6 2s6-.9 6-2V8" />
             </svg>
-          } label="Datasets" />
+          } label={t("nav.datasets")} />
         </div>
 
         {/* Settings */}
-        <SectionLabel>Settings</SectionLabel>
+        <SectionLabel>{t("nav.settings")}</SectionLabel>
         <div className="space-y-0.5">
           <NavItem to="/api-keys" icon={
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <circle cx="6" cy="8" r="3" />
               <path d="M9 8h5M12 6v4" />
             </svg>
-          } label="API Keys" />
+          } label={t("nav.apiKeys")} />
         </div>
       </nav>
 
@@ -232,7 +239,7 @@ function Sidebar() {
           </div>
           <button
             onClick={handleLogout}
-            title="Logout"
+            title={t("nav.logout")}
             className="text-neutral-400 hover:text-neutral-600 p-1"
           >
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
@@ -266,41 +273,43 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<RedirectIfAuth><LoginPage /></RedirectIfAuth>} />
-        <Route path="/register" element={<RedirectIfAuth><RegisterPage /></RedirectIfAuth>} />
+    <I18nProvider>
+      <AuthProvider>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={<RedirectIfAuth><LoginPage /></RedirectIfAuth>} />
+          <Route path="/register" element={<RedirectIfAuth><RegisterPage /></RedirectIfAuth>} />
 
-        {/* Protected routes */}
-        <Route
-          path="/*"
-          element={
-            <RequireAuth>
-              <MainLayout>
-                <Routes>
-                  <Route path="/" element={<TraceListPage />} />
-                  <Route path="/dashboard" element={<DashboardPage />} />
-                  <Route path="/traces/:id" element={<TraceDetailPage />} />
-                  <Route path="/sessions" element={<SessionListPage />} />
-                  <Route path="/sessions/:id" element={<SessionDetailPage />} />
-                  <Route path="/users" element={<UsersAnalyticsPage />} />
-                  <Route path="/prompts" element={<PromptListPage />} />
-                  <Route path="/prompts/:name" element={<PromptDetailPage />} />
-                  <Route path="/prompts/:name/playground" element={<PromptPlaygroundPage />} />
-                  <Route path="/api-keys" element={<ApiKeysPage />} />
-                  <Route path="/evaluations" element={<EvaluatorsPage />} />
-                  <Route path="/evaluations/runs" element={<EvaluationRunsPage />} />
-                  <Route path="/annotation" element={<AnnotationQueuePage />} />
-                  <Route path="/scores" element={<ScoresAnalyticsPage />} />
-                  <Route path="/datasets" element={<DatasetsPage />} />
-                  <Route path="/datasets/:id" element={<DatasetDetailPage />} />
-                </Routes>
-              </MainLayout>
-            </RequireAuth>
-          }
-        />
-      </Routes>
-    </AuthProvider>
+          {/* Protected routes */}
+          <Route
+            path="/*"
+            element={
+              <RequireAuth>
+                <MainLayout>
+                  <Routes>
+                    <Route path="/" element={<TraceListPage />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/traces/:id" element={<TraceDetailPage />} />
+                    <Route path="/sessions" element={<SessionListPage />} />
+                    <Route path="/sessions/:id" element={<SessionDetailPage />} />
+                    <Route path="/users" element={<UsersAnalyticsPage />} />
+                    <Route path="/prompts" element={<PromptListPage />} />
+                    <Route path="/prompts/:name" element={<PromptDetailPage />} />
+                    <Route path="/prompts/:name/playground" element={<PromptPlaygroundPage />} />
+                    <Route path="/api-keys" element={<ApiKeysPage />} />
+                    <Route path="/evaluations" element={<EvaluatorsPage />} />
+                    <Route path="/evaluations/runs" element={<EvaluationRunsPage />} />
+                    <Route path="/annotation" element={<AnnotationQueuePage />} />
+                    <Route path="/scores" element={<ScoresAnalyticsPage />} />
+                    <Route path="/datasets" element={<DatasetsPage />} />
+                    <Route path="/datasets/:id" element={<DatasetDetailPage />} />
+                  </Routes>
+                </MainLayout>
+              </RequireAuth>
+            }
+          />
+        </Routes>
+      </AuthProvider>
+    </I18nProvider>
   );
 }

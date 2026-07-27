@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/auth";
+import { LanguageSwitcher, useI18n } from "../lib/i18n";
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +20,7 @@ export default function LoginPage() {
       await login(email, password);
       navigate("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : t("login.failed"));
     } finally {
       setLoading(false);
     }
@@ -27,9 +29,12 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-50">
       <div className="w-full max-w-sm">
+        <div className="flex justify-end mb-2">
+          <LanguageSwitcher />
+        </div>
         <div className="text-center mb-8">
           <h1 className="text-2xl font-semibold tracking-tight">🔦 Mini Langfuse</h1>
-          <p className="text-sm text-neutral-500 mt-2">Sign in to your account</p>
+          <p className="text-sm text-neutral-500 mt-2">{t("login.title")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-neutral-200 p-6 space-y-4">
@@ -41,7 +46,7 @@ export default function LoginPage() {
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-1">
-              Email
+              {t("login.email")}
             </label>
             <input
               type="email"
@@ -55,7 +60,7 @@ export default function LoginPage() {
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-1">
-              Password
+              {t("login.password")}
             </label>
             <input
               type="password"
@@ -72,22 +77,16 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? t("login.submitting") : t("login.submit")}
           </button>
 
           <p className="text-sm text-neutral-500 text-center">
-            Don't have an account?{" "}
+            {t("login.noAccount")}{" "}
             <Link to="/register" className="text-blue-600 hover:underline">
-              Sign up
+              {t("login.register")}
             </Link>
           </p>
         </form>
-
-        <p className="text-xs text-neutral-400 text-center mt-4">
-          Demo credentials: pk-lf-demo / sk-lf-demo are for SDK access.
-          <br />
-          Create an account to use the web UI.
-        </p>
       </div>
     </div>
   );

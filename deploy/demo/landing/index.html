@@ -21,41 +21,45 @@
     <header class="top">
       <a class="brand" href="/">liuyidi<span>.me</span></a>
       <nav>
-        <a href="https://bot.liuyidi.me/">Agent</a>
-        <a href="https://mlf.liuyidi.me/">Observability</a>
-        <a href="https://kb.liuyidi.me/">Knowledge</a>
+        <a href="https://bot.liuyidi.me/" data-i18n="nav.agent">Agent</a>
+        <a href="https://mlf.liuyidi.me/" data-i18n="nav.obs">可观测</a>
+        <a href="https://kb.liuyidi.me/" data-i18n="nav.kb">知识库</a>
         <a href="https://github.com/liuyidi" target="_blank" rel="noopener">GitHub</a>
+        <select id="lang" aria-label="Language" style="margin-left:8px;font:inherit;font-size:12px;padding:2px 6px;border-radius:6px;border:1px solid rgba(0,0,0,.15);background:transparent;">
+          <option value="zh-CN">简体中文</option>
+          <option value="en">English</option>
+        </select>
       </nav>
     </header>
 
     <main>
       <section class="hero">
-        <p class="eyebrow">Agent Lab · Interview Demo</p>
-        <h1>自己造的一套<br /><em>Agent 工程栈</em></h1>
-        <p class="lede">
+        <p class="eyebrow" data-i18n="hero.eyebrow">Agent Lab · 面试演示</p>
+        <h1 data-i18n-html="hero.title">自己造的一套<br /><em>Agent 工程栈</em></h1>
+        <p class="lede" data-i18n="hero.lede">
           从 runtime、可观测到知识库：可演示、可部署、可讲清楚设计取舍。
           不是套壳 demo，是我亲手落地的工程能力。
         </p>
         <div class="cta">
-          <a class="btn primary" href="https://bot.liuyidi.me/">打开 Agent</a>
-          <a class="btn ghost" href="https://bot.liuyidi.me/ui/">看开发笔记 /ui</a>
+          <a class="btn primary" href="https://bot.liuyidi.me/" data-i18n="cta.agent">打开 Agent</a>
+          <a class="btn ghost" href="https://bot.liuyidi.me/ui/" data-i18n="cta.devui">看开发笔记 /ui</a>
         </div>
       </section>
 
       <section class="projects" id="projects">
-        <h2>三个项目</h2>
+        <h2 data-i18n="projects.title">三个项目</h2>
         <div class="cards">
           <article class="card">
             <h3>minibot + WebUI</h3>
-            <p>
+            <p data-i18n="projects.bot">
               FastAPI Agent runtime：工具循环、会话、MCP、流式输出；
-              主站是 nanobot WebUI，附属 <code>/ui</code> 讲清实现思路。
+              主站是 nanobot WebUI，附属 /ui 讲清实现思路。
             </p>
             <a href="https://bot.liuyidi.me/">bot.liuyidi.me →</a>
           </article>
           <article class="card">
             <h3>mini-langfuse</h3>
-            <p>
+            <p data-i18n="projects.mlf">
               自研可观测：Traces / Sessions / Scores / Evaluators / Playground，
               Python SDK + LangChain 接入，minibot 每轮对话可上报。
             </p>
@@ -63,7 +67,7 @@
           </article>
           <article class="card">
             <h3>minikb</h3>
-            <p>
+            <p data-i18n="projects.kb">
               Agent 知识库：文档摄入、切片、向量检索、RAG QA。
               与 minibot 通过 REST 集成（持续演进中）。
             </p>
@@ -73,18 +77,83 @@
       </section>
 
       <section class="skills" id="skills">
-        <h2>我能讲清楚的能力</h2>
+        <h2 data-i18n="skills.title">我能讲清楚的能力</h2>
         <ul>
-          <li><strong>Agent Loop</strong> — 多轮 tool calling、锁与并发、会话持久化</li>
-          <li><strong>可观测</strong> — span/trace、评分、评测跑批、SSE 实时刷新</li>
-          <li><strong>工程交付</strong> — Docker Compose、Nginx HTTPS、国内镜像源、2C2G 省内存部署</li>
-          <li><strong>产品化</strong> — 主站 WebUI + DevUI 双轨，面试时既能用又能讲</li>
+          <li data-i18n-html="skills.1"><strong>Agent Loop</strong> — 多轮 tool calling、锁与并发、会话持久化</li>
+          <li data-i18n-html="skills.2"><strong>可观测</strong> — span/trace、评分、评测跑批、SSE 实时刷新</li>
+          <li data-i18n-html="skills.3"><strong>工程交付</strong> — Docker Compose、Nginx HTTPS、国内镜像源、2C2G 省内存部署</li>
+          <li data-i18n-html="skills.4"><strong>产品化</strong> — 主站 WebUI + DevUI 双轨，面试时既能用又能讲</li>
         </ul>
       </section>
     </main>
 
     <footer>
-      <p>Built for interviews · 源码见 GitHub @liuyidi</p>
+      <p data-i18n="footer">为面试演示而建 · 源码见 GitHub @liuyidi</p>
     </footer>
+    <script>
+      const KEY = "landing.locale";
+      const M = {
+        "zh-CN": {
+          "nav.agent": "Agent",
+          "nav.obs": "可观测",
+          "nav.kb": "知识库",
+          "hero.eyebrow": "Agent Lab · 面试演示",
+          "hero.title": "自己造的一套<br /><em>Agent 工程栈</em>",
+          "hero.lede": "从 runtime、可观测到知识库：可演示、可部署、可讲清楚设计取舍。不是套壳 demo，是我亲手落地的工程能力。",
+          "cta.agent": "打开 Agent",
+          "cta.devui": "看开发笔记 /ui",
+          "projects.title": "三个项目",
+          "projects.bot": "FastAPI Agent runtime：工具循环、会话、MCP、流式输出；主站是 nanobot WebUI，附属 /ui 讲清实现思路。",
+          "projects.mlf": "自研可观测：Traces / Sessions / Scores / Evaluators / Playground，Python SDK + LangChain 接入，minibot 每轮对话可上报。",
+          "projects.kb": "Agent 知识库：文档摄入、切片、向量检索、RAG QA。与 minibot 通过 REST 集成（持续演进中）。",
+          "skills.title": "我能讲清楚的能力",
+          "skills.1": "<strong>Agent Loop</strong> — 多轮 tool calling、锁与并发、会话持久化",
+          "skills.2": "<strong>可观测</strong> — span/trace、评分、评测跑批、SSE 实时刷新",
+          "skills.3": "<strong>工程交付</strong> — Docker Compose、Nginx HTTPS、国内镜像源、2C2G 省内存部署",
+          "skills.4": "<strong>产品化</strong> — 主站 WebUI + DevUI 双轨，面试时既能用又能讲",
+          "footer": "为面试演示而建 · 源码见 GitHub @liuyidi",
+        },
+        en: {
+          "nav.agent": "Agent",
+          "nav.obs": "Observability",
+          "nav.kb": "Knowledge",
+          "hero.eyebrow": "Agent Lab · Interview Demo",
+          "hero.title": "A handmade<br /><em>Agent engineering stack</em>",
+          "hero.lede": "From runtime and observability to knowledge base: demable, deployable, and explainable. Not a wrapper demo — engineering I shipped myself.",
+          "cta.agent": "Open Agent",
+          "cta.devui": "Dev notes /ui",
+          "projects.title": "Three projects",
+          "projects.bot": "FastAPI agent runtime: tool loop, sessions, MCP, streaming. Main site is nanobot WebUI; /ui explains the implementation.",
+          "projects.mlf": "Homegrown observability: Traces / Sessions / Scores / Evaluators / Playground, with Python SDK + LangChain. Minibot reports every turn.",
+          "projects.kb": "Agent knowledge base: ingest, chunking, vector retrieval, RAG QA. Integrated with minibot over REST (still evolving).",
+          "skills.title": "What I can walk through",
+          "skills.1": "<strong>Agent Loop</strong> — multi-turn tool calling, locks/concurrency, session persistence",
+          "skills.2": "<strong>Observability</strong> — span/trace, scoring, eval runs, live SSE",
+          "skills.3": "<strong>Delivery</strong> — Docker Compose, Nginx HTTPS, CN mirrors, 2C2G-friendly deploy",
+          "skills.4": "<strong>Productization</strong> — WebUI + DevUI dual track for interview demos",
+          "footer": "Built for interviews · source on GitHub @liuyidi",
+        },
+      };
+      let locale = localStorage.getItem(KEY) || "zh-CN";
+      if (locale !== "zh-CN" && locale !== "en") locale = "zh-CN";
+      const sel = document.getElementById("lang");
+      sel.value = locale;
+      function apply() {
+        document.documentElement.lang = locale;
+        const dict = M[locale];
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          el.textContent = dict[el.getAttribute("data-i18n")] || el.textContent;
+        });
+        document.querySelectorAll("[data-i18n-html]").forEach((el) => {
+          el.innerHTML = dict[el.getAttribute("data-i18n-html")] || el.innerHTML;
+        });
+      }
+      sel.addEventListener("change", () => {
+        locale = sel.value;
+        localStorage.setItem(KEY, locale);
+        apply();
+      });
+      apply();
+    </script>
   </body>
 </html>
