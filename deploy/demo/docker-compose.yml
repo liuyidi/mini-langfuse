@@ -142,6 +142,8 @@ services:
       MINIKB_S3_SECURE: "false"
       MINIKB_OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       MINIKB_OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.deepseek.com/v1}
+      # DeepSeek has no /embeddings; auto→mock. Override to openai when using a real embed API.
+      MINIKB_EMBEDDING_PROVIDER: ${MINIKB_EMBEDDING_PROVIDER:-auto}
       MINIKB_REQUIRE_API_KEY: "false"
     ports:
       - "127.0.0.1:8081:8080"
