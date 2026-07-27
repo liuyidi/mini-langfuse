@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>liuyidi — Agent Lab</title>
+    <meta
+      name="description"
+      content="Interview demo: minibot agent runtime, mini-langfuse observability, minikb knowledge."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <header class="top">
+      <a class="brand" href="/">liuyidi<span>.me</span></a>
+      <nav>
+        <a href="https://bot.liuyidi.me/">Agent</a>
+        <a href="https://mlf.liuyidi.me/">Observability</a>
+        <a href="https://kb.liuyidi.me/">Knowledge</a>
+        <a href="https://github.com/liuyidi" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Agent Lab · Interview Demo</p>
+        <h1>自己造的一套<br /><em>Agent 工程栈</em></h1>
+        <p class="lede">
+          从 runtime、可观测到知识库：可演示、可部署、可讲清楚设计取舍。
+          不是套壳 demo，是我亲手落地的工程能力。
+        </p>
+        <div class="cta">
+          <a class="btn primary" href="https://bot.liuyidi.me/">打开 Agent</a>
+          <a class="btn ghost" href="https://bot.liuyidi.me/ui/">看开发笔记 /ui</a>
+        </div>
+      </section>
+
+      <section class="projects" id="projects">
+        <h2>三个项目</h2>
+        <div class="cards">
+          <article class="card">
+            <h3>minibot + WebUI</h3>
+            <p>
+              FastAPI Agent runtime：工具循环、会话、MCP、流式输出；
+              主站是 nanobot WebUI，附属 <code>/ui</code> 讲清实现思路。
+            </p>
+            <a href="https://bot.liuyidi.me/">bot.liuyidi.me →</a>
+          </article>
+          <article class="card">
+            <h3>mini-langfuse</h3>
+            <p>
+              自研可观测：Traces / Sessions / Scores / Evaluators / Playground，
+              Python SDK + LangChain 接入，minibot 每轮对话可上报。
+            </p>
+            <a href="https://mlf.liuyidi.me/">mlf.liuyidi.me →</a>
+          </article>
+          <article class="card">
+            <h3>minikb</h3>
+            <p>
+              Agent 知识库：文档摄入、切片、向量检索、RAG QA。
+              与 minibot 通过 REST 集成（持续演进中）。
+            </p>
+            <a href="https://kb.liuyidi.me/">kb.liuyidi.me →</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="skills" id="skills">
+        <h2>我能讲清楚的能力</h2>
+        <ul>
+          <li><strong>Agent Loop</strong> — 多轮 tool calling、锁与并发、会话持久化</li>
+          <li><strong>可观测</strong> — span/trace、评分、评测跑批、SSE 实时刷新</li>
+          <li><strong>工程交付</strong> — Docker Compose、Nginx HTTPS、国内镜像源、2C2G 省内存部署</li>
+          <li><strong>产品化</strong> — 主站 WebUI + DevUI 双轨，面试时既能用又能讲</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>Built for interviews · 源码见 GitHub @liuyidi</p>
+    </footer>
+  </body>
+</html>

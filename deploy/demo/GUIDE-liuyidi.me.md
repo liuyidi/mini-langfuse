@@ -6,6 +6,35 @@
 
 ---
 
+## DNS（阿里云解析）
+
+| 主机记录 | 类型 | 值 |
+|----------|------|-----|
+| `@` | A | ECS 公网 IP |
+| `www` | A | ECS 公网 IP |
+| `mlf` | A | ECS 公网 IP |
+| `bot` | A | ECS 公网 IP |
+| `kb` | A | ECS 公网 IP |
+
+门户：`https://liuyidi.me`（静态页 `deploy/demo/landing/`）。
+
+## GitHub → ECS 自动部署
+
+仓库已含 `.github/workflows/deploy-demo.yml`。在 GitHub → Settings → Secrets 配置：
+
+| Secret | 含义 |
+|--------|------|
+| `ECS_HOST` | 公网 IP |
+| `ECS_USER` | `root` 或 `ubuntu` |
+| `ECS_SSH_KEY` | 私钥全文（与登录 ECS 同一把） |
+| `ECS_DEMO_DIR` | 可选，默认 `/opt/demo` |
+
+ECS 上各仓库需已 clone，且 `deploy/demo/.env` 已存在。push `main`（触及 deploy/server/web）即触发 `./up.sh core`。
+
+minikb：`./up.sh kb`（需内存；面试前预热）。
+
+---
+
 ## 0. 先确认两件事
 
 ### A. ECS 在哪个地域？

@@ -154,9 +154,8 @@ services:
 
   minibot:
     build:
-      context: ${MINIBOT_DIR:-../../../minibot}
-      # Must live inside build context (compose resolves dockerfile relative to context).
-      # On ECS: cp deploy/demo/Dockerfile.minibot /opt/demo/minibot/Dockerfile.minibot
+      # Monorepo root so Docker can build webui/ + minibot/
+      context: ${NANOBOT_DIR:-../../../nanobot}
       dockerfile: Dockerfile.minibot
       additional_contexts:
         langfuse_sdk: ${MLF_DIR:-../..}/sdk-python
@@ -177,6 +176,7 @@ services:
       MINIBOT_SERVER_LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-pk-lf-demo}
       MINIBOT_SERVER_LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-sk-lf-demo}
       MINIBOT_SERVER_DATA_DIR: /data
+      MINIBOT_WEBUI_DIST: /app/webui-dist
     volumes:
       - demo_minibot:/data
     ports:
@@ -186,8 +186,8 @@ services:
       interval: 15s
       timeout: 5s
       retries: 8
-      start_period: 20s
-    mem_limit: 384m
+      start_period: 40s
+    mem_limit: 512m
     networks: [demo]
 
 volumes:

@@ -1,0 +1,66 @@
+name: Deploy demo stack to Aliyun ECS
+
+# Push to main → SSH into ECS and rebuild demo compose.
+# Required secrets:
+#   ECS_HOST      — e.g. 116.62.35.76
+#   ECS_USER       — e.g. root
+#   ECS_SSH_KEY   — private key PEM contents
+# Optional:
+#   ECS_DEMO_DIR  — default /opt/demo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "deploy/demo/**"
+      - "server/**"
+      - "web/**"
+      - "sdk-python/**"
+      - ".github/workflows/deploy-demo.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-demo-ecs
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          command_timeout: 30m
+          script: |
+            set -euo pipefail
+            DEMO_ROOT="${{ secrets.ECS_DEMO_DIR }}"
+            DEMO_ROOT="${DEMO_ROOT:-/opt/demo}"
+            cd "$DEMO_ROOT"
+
+            echo "==> pull repos"
+            for d in mini-langfuse nanobot minikb; do
+              if [ -d "$d/.git" ]; then
+                git -C "$d" fetch --depth 1 origin main || git -C "$d" fetch --depth 1 origin master || true
+                git -C "$d" reset --hard origin/main 2>/dev/null || git -C "$d" reset --hard origin/master 2>/dev/null || true
+              fi
+            done
+
+            # Keep symlink layout
+            ln -sfn nanobot/minibot minibot
+
+            echo "==> compose up"
+            cd mini-langfuse/deploy/demo
+            if [ ! -f .env ]; then
+              echo "ERROR: missing deploy/demo/.env on ECS" >&2
+              exit 1
+            fi
+            ./up.sh core
+
+            echo "==> health"
+            curl -fsS http://127.0.0.1:8000/health
+            curl -fsS http://127.0.0.1:8766/health
+            echo
+            echo "deploy ok"

@@ -306,3 +306,17 @@ sudo certbot renew --dry-run
 ---
 
 *本文档来自真实上线过程，后续若改 compose/Dockerfile，请同步更新本节踩坑表。*
+
+## 附录：面试门户（2026-07-27）
+
+设计见 [`superpowers/specs/2026-07-27-interview-demo-portal-design.md`](./superpowers/specs/2026-07-27-interview-demo-portal-design.md)。
+
+| URL | 内容 |
+|-----|------|
+| `https://liuyidi.me` | Landing |
+| `https://bot.liuyidi.me/` | nanobot WebUI |
+| `https://bot.liuyidi.me/ui/` | DevUI |
+| `https://mlf.liuyidi.me` | mini-langfuse |
+| `https://kb.liuyidi.me` | minikb（`./up.sh kb`） |
+
+CI：`.github/workflows/deploy-demo.yml` + GitHub Secrets `ECS_*`。
