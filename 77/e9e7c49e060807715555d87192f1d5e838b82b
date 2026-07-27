@@ -1,0 +1,24 @@
+deploy/demo/Dockerfile.minikb
+  s_6d7f85b34e18a1::t_27a40f6c27c74a 1-34
+deploy/demo/docker-compose.yml
+  s_6d7f85b34e18a1::t_b8630e723a1c0b 122
+  s_6d7f85b34e18a1::t_b099fbe23dbd61 130
+.claude/skills/aliyun-ecs-demo-deploy/SKILL.md
+  s_6d7f85b34e18a1::t_35c20f802ccdcc 1-231
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.38-trip",
+  "base_commit_sha": "77e9e7c49e060807715555d87192f1d5e838b82b",
+  "prompts": {},
+  "sessions": {
+    "s_6d7f85b34e18a1": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "88a3d5a1-260b-4346-82aa-244915858d5b",
+        "model": "default"
+      },
+      "human_author": "liuyidi <liuyidi1993@gmail.com>"
+    }
+  }
+}
