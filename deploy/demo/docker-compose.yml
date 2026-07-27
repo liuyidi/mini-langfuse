@@ -119,13 +119,15 @@ services:
   minikb:
     build:
       context: ${MINIKB_DIR:-../../../minikb}
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/Dockerfile.ecs
     image: demo-minikb:local
     container_name: demo-minikb
     restart: unless-stopped
     profiles: ["full", "kb"]
     depends_on:
       postgres:
+        condition: service_healthy
+      minio:
         condition: service_healthy
     environment:
       MINIKB_ENV: ${MINIKB_ENV:-dev}
