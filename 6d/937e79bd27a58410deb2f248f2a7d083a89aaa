@@ -1,0 +1,21 @@
+deploy/demo/.env.example
+  s_6d7f85b34e18a1::t_f798731d207bfe 39-43
+deploy/demo/docker-compose.yml
+  s_6d7f85b34e18a1::t_4a6e0c3c8d596f 184-187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.38-trip",
+  "base_commit_sha": "6d937e79bd27a58410deb2f248f2a7d083a89aaa",
+  "prompts": {},
+  "sessions": {
+    "s_6d7f85b34e18a1": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "88a3d5a1-260b-4346-82aa-244915858d5b",
+        "model": "default"
+      },
+      "human_author": "liuyidi <liuyidi1993@gmail.com>"
+    }
+  }
+}
