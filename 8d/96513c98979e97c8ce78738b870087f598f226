@@ -1,0 +1,43 @@
+docs/superpowers/specs/2026-07-27-interview-demo-portal-design.md
+  s_6d7f85b34e18a1::t_d7ba54d204cf8f 1-38
+deploy/demo/docker-compose.yml
+  s_6d7f85b34e18a1::t_b8bdbf8613116b 157-158,179,189-190
+deploy/demo/landing/index.html
+  s_6d7f85b34e18a1::t_07fa41e51a341c 1-90
+deploy/demo/.env.example
+  s_6d7f85b34e18a1::t_f4821eca87890b 5,9,11,14
+  s_6d7f85b34e18a1::t_e3a81c733e4bda 27
+deploy/demo/up.sh
+  s_6d7f85b34e18a1::t_5258b630e01664 21,33-46,50,52,59-61,70,96-97,104-106
+.github/workflows/deploy-demo.yml
+  s_6d7f85b34e18a1::t_8386869b12b926 1-66
+docs/aliyun-ecs-demo-deploy.md
+  s_6d7f85b34e18a1::t_fe25be105c219f 309-322
+deploy/demo/Dockerfile.minibot
+  s_6d7f85b34e18a1::t_b152b15e55c056 4-9,11-12,15-16,33-34,45-46
+deploy/demo/landing/styles.css
+  s_6d7f85b34e18a1::t_ec72484e6f694e 1-262
+deploy/demo/GUIDE-liuyidi.me.md
+  s_6d7f85b34e18a1::t_2604867e122566 36-37
+  s_6d7f85b34e18a1::t_0ec430aa85c5df 9-35
+deploy/demo/nginx-http-only.conf
+  s_6d7f85b34e18a1::t_187c66e8969408 1-7,18-34
+deploy/demo/landing/README.md
+  s_6d7f85b34e18a1::t_0365e55f0343eb 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.38-trip",
+  "base_commit_sha": "8d96513c98979e97c8ce78738b870087f598f226",
+  "prompts": {},
+  "sessions": {
+    "s_6d7f85b34e18a1": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "88a3d5a1-260b-4346-82aa-244915858d5b",
+        "model": "default"
+      },
+      "human_author": "liuyidi <liuyidi1993@gmail.com>"
+    }
+  }
+}
