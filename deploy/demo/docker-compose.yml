@@ -181,6 +181,10 @@ services:
       MINIBOT_SERVER_LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-sk-lf-demo}
       MINIBOT_SERVER_DATA_DIR: /data
       MINIBOT_WEBUI_DIST: /app/webui-dist
+      # Docker DNS service name; empty disables kb_* tools
+      MINIBOT_SERVER_MINIKB_BASE_URL: ${MINIBOT_MINIKB_BASE_URL:-http://minikb:8080}
+      MINIBOT_SERVER_MINIKB_API_KEY: ${MINIBOT_MINIKB_API_KEY:-}
+      MINIBOT_SERVER_MINIKB_UI_URL: ${MINIBOT_MINIKB_UI_URL:-https://kb.liuyidi.me/ui/}
     volumes:
       - demo_minibot:/data
     ports:
