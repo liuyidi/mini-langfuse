@@ -1,0 +1,31 @@
+web/src/lib/i18n.tsx
+  s_6d7f85b34e18a1::t_bf6d43e3345b1d 1-53,57-89,92-94,98-173
+  s_6d7f85b34e18a1::t_3ef9d4854a78f2 54-56
+  s_6d7f85b34e18a1::t_33e2746665f93f 90-91,95-97
+web/src/App.tsx
+  s_6d7f85b34e18a1::t_0ef606c5102016 21,29-30,37-38
+  s_6d7f85b34e18a1::t_6e4775206dd019 276-281,283-313
+  s_6d7f85b34e18a1::t_b1370a4f11a566 94,105-111,138,142,148,156,162,166,172,177,181,187,192,198,204,208,216,220,227,242
+web/src/pages/LoginPage.tsx
+  s_6d7f85b34e18a1::t_153c4225c23043 4,8,23,32-34,37,49,63,80,84,86
+deploy/demo/landing/index.html
+  s_6d7f85b34e18a1::t_952edafb940d03 24-26,28-31,37-39,44-45,50,54,56,62,70,80,82-85,91,93-157
+web/src/pages/RegisterPage.tsx
+  s_6d7f85b34e18a1::t_8fb1255e8d88bd 4,8,24,33-35,38,50,63,77,88,96,100,102,108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.38-trip",
+  "base_commit_sha": "b9a44737b178b34d4c030318f8ece17313d5f8aa",
+  "prompts": {},
+  "sessions": {
+    "s_6d7f85b34e18a1": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "88a3d5a1-260b-4346-82aa-244915858d5b",
+        "model": "default"
+      },
+      "human_author": "liuyidi <liuyidi1993@gmail.com>"
+    }
+  }
+}
