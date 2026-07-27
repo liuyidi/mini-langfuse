@@ -81,7 +81,7 @@ function TraceCard({ t }: { t: Trace }) {
         <Metric label="Tokens" value={formatNum(t.total_tokens)} />
         <Metric label="Cost" value={formatCost(t.total_cost_usd)} />
       </div>
-      {(t.input || t.output) && (
+      {(t.input != null || t.output != null) && (
         <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
           {t.input != null && (
             <Bubble kind="input" value={t.input} />

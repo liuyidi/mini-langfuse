@@ -27,7 +27,7 @@ def upgrade() -> None:
         sa.Column('name', sa.String(), nullable=False),
         sa.Column('evaluator_type', sa.String(), nullable=False),
         sa.Column('config', sa.JSON(), nullable=False),
-        sa.Column('is_active', sa.Boolean(), nullable=False, server_default=sa.text('1')),
+        sa.Column('is_active', sa.Boolean(), nullable=False, server_default=sa.text('true')),
         sa.Column('created_by', sa.String(), nullable=True),
         # No DB-side now(): SQLite rejects DEFAULT (now()). App sets timestamps in Python.
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),

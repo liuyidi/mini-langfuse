@@ -5,6 +5,8 @@ Backend: **FastAPI + SQLAlchemy + SQLite**. Frontend: **React + Vite + TypeScrip
 
 📄 See [`mini-langfuse-plan.md`](./mini-langfuse-plan.md) for the full design doc, data model, and 5-milestone roadmap. Extension directions (M6+) live in [`mini-langfuse-plan-v2.md`](./mini-langfuse-plan-v2.md).
 
+🚀 **Aliyun ECS demo deploy (liuyidi.me) + pitfalls**: [`docs/aliyun-ecs-demo-deploy.md`](./docs/aliyun-ecs-demo-deploy.md) · templates in [`deploy/demo/`](./deploy/demo/).
+
 ## Status
 
 - ✅ **Milestone 1** — End-to-end minimum loop: ingestion API, trace/observation model, tree view UI, working Python SDK, demo script.

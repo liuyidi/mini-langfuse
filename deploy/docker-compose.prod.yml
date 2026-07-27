@@ -1,0 +1,81 @@
+# Production compose for Aliyun ECS (or any single-host deploy).
+#
+# Usage (from repo root):
+#   cp deploy/.env.prod.example deploy/.env.prod
+#   # edit deploy/.env.prod
+#   docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.prod up -d --build
+#
+# Only web (8080) is exposed on localhost; host Nginx terminates TLS and proxies to it.
+# PostgreSQL stays on the internal Docker network (no host port).
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mlf-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-minilangfuse}
+      POSTGRES_USER: ${POSTGRES_USER:-mlf}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env.prod}
+    volumes:
+      - mlf_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mlf} -d ${POSTGRES_DB:-minilangfuse}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mlf_internal
+
+  server:
+    build:
+      context: ../server
+    image: mini-langfuse-server:prod
+    container_name: mlf-server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env.prod
+    environment:
+      MLF_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-mlf}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-minilangfuse}
+      MLF_CORS_ORIGINS: ${MLF_CORS_ORIGINS:?set MLF_CORS_ORIGINS to your public https origin}
+      MLF_OPENAI_API_KEY: ${MLF_OPENAI_API_KEY:-}
+      MLF_OPENAI_BASE_URL: ${MLF_OPENAI_BASE_URL:-https://api.openai.com/v1}
+      MLF_ANTHROPIC_API_KEY: ${MLF_ANTHROPIC_API_KEY:-}
+    # Bind to localhost only — SDK / ingestion can also go through host Nginx → web → server.
+    ports:
+      - "127.0.0.1:${MLF_SERVER_PORT:-8000}:8000"
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${MLF_UVICORN_WORKERS:-2}"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - mlf_internal
+
+  web:
+    build:
+      context: ../web
+    image: mini-langfuse-web:prod
+    container_name: mlf-web
+    restart: unless-stopped
+    depends_on:
+      server:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${MLF_WEB_PORT:-8080}:80"
+    networks:
+      - mlf_internal
+
+volumes:
+  mlf_pg:
+
+networks:
+  mlf_internal:
+    driver: bridge

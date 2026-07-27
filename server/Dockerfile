@@ -1,14 +1,23 @@
-FROM python:3.11-slim
+FROM docker.m.daocloud.io/library/python:3.11-slim
 
 WORKDIR /app
 
-# System deps (curl for healthcheck, gcc only if a wheel isn't available)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
+# Use Aliyun Debian mirror (deb.debian.org is often unreachable from CN mainland)
+RUN set -eux; \
+    if [ -f /etc/apt/sources.list.d/debian.sources ]; then \
+      sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources; \
+      sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources; \
+    fi; \
+    if [ -f /etc/apt/sources.list ]; then \
+      sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
+      sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
+    fi; \
+    apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
+# Install deps from pyproject (keeps bcrypt/httpx/etc in sync)
 COPY pyproject.toml ./
-RUN pip install --no-cache-dir \
+RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com \
     "fastapi>=0.111" \
     "uvicorn[standard]>=0.30" \
     "sqlalchemy>=2.0" \
@@ -16,7 +25,9 @@ RUN pip install --no-cache-dir \
     "pydantic-settings>=2.3" \
     "python-ulid>=2.2" \
     "alembic>=1.13" \
-    "psycopg[binary]>=3.1"
+    "psycopg[binary]>=3.1" \
+    "bcrypt>=4.1" \
+    "httpx>=0.27"
 
 COPY app ./app
 COPY alembic.ini ./alembic.ini
