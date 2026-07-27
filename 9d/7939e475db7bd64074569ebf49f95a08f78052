@@ -1,0 +1,25 @@
+deploy/demo/landing/v0.1/README.md
+  s_6d7f85b34e18a1::t_e76aaef638d0b8 1-13
+deploy/demo/landing/v0.1/index.html
+  s_6d7f85b34e18a1::t_bccc7ed49f637d 1-171
+deploy/demo/landing/v0.1/styles.css
+  s_6d7f85b34e18a1::t_c68643a2da7531 1-207
+deploy/demo/landing/README.md
+  s_6d7f85b34e18a1::t_e8d65e80462f25 8-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.38-trip",
+  "base_commit_sha": "9d7939e475db7bd64074569ebf49f95a08f78052",
+  "prompts": {},
+  "sessions": {
+    "s_6d7f85b34e18a1": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "88a3d5a1-260b-4346-82aa-244915858d5b",
+        "model": "default"
+      },
+      "human_author": "liuyidi <liuyidi1993@gmail.com>"
+    }
+  }
+}
