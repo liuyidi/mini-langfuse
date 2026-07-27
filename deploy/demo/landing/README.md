@@ -5,3 +5,6 @@
 #   sudo cp nginx-http-only.conf /etc/nginx/sites-available/liuyidi-demo
 #   sudo nginx -t && sudo systemctl reload nginx
 #   sudo certbot --nginx -d liuyidi.me -d www.liuyidi.me -d mlf... (expand)
+#
+# Previews (do not replace index.html until approved):
+#   V0.1 Option A → https://liuyidi.me/v0.1/  (see v0.1/)
