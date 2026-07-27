@@ -1,0 +1,87 @@
+deploy/demo/Dockerfile.minibot
+  s_6d7f85b34e18a1::t_724e5ec60a6d9b 4-13,23-24
+  s_6d7f85b34e18a1::t_44320fefd4f2e2 1,3,14-22,25-37
+  s_6d7f85b34e18a1::t_a94167d1fc5003 2
+deploy/.env.prod.example
+  s_6d7f85b34e18a1::t_78ad4102758a2d 1-26
+deploy/demo/GUIDE-liuyidi.me.md
+  s_6d7f85b34e18a1::t_36c604a521d3a2 1-2
+  s_6d7f85b34e18a1::t_80179afda64942 3-246
+web/src/pages/SessionDetailPage.tsx
+  s_6d7f85b34e18a1::t_fc327a89ef43e5 84
+server/alembic/versions/2026_07_26_1300-004_eval_system.py
+  s_6d7f85b34e18a1::t_1e44395cc1dc7c 30
+server/pyproject.toml
+  s_6d7f85b34e18a1::t_8a2d99de3dd3b8 16
+deploy/demo/README.md
+  s_6d7f85b34e18a1::t_7f6157a50607ec 77,79,81-85,87
+  s_6d7f85b34e18a1::t_c73317bb6c4312 1-4,7-76,78,80,86,88-117
+  s_6d7f85b34e18a1::t_c8dd3fb9d483d1 5-6
+docs/aliyun-ecs-demo-deploy.md
+  s_6d7f85b34e18a1::t_7f0627e32216aa 1-308
+README.md
+  s_6d7f85b34e18a1::t_4eebc3dc409f9d 8-9
+deploy/demo/nginx-http-only.conf
+  s_6d7f85b34e18a1::t_d630b115aac8b0 1-86
+deploy/docker-compose.prod.yml
+  s_6d7f85b34e18a1::t_fe562611d626f1 1-81
+server/Dockerfile
+  s_6d7f85b34e18a1::t_7fb59eaa682893 18,28-30
+  s_6d7f85b34e18a1::t_9a9469f0a87318 1
+  s_6d7f85b34e18a1::t_0439126af8f7f0 5-15,20
+deploy/up.sh
+  s_6d7f85b34e18a1::t_7196a2bb334520 1-14
+web/Dockerfile
+  s_6d7f85b34e18a1::t_61a411262c3b22 4-6
+  s_6d7f85b34e18a1::t_010df6ad607066 2,14
+deploy/demo/up.sh
+  s_6d7f85b34e18a1::t_f3e7402237d699 1-42,49-89
+  s_6d7f85b34e18a1::t_e4df746e652f24 43-48
+deploy/aliyun-nginx.conf
+  s_6d7f85b34e18a1::t_716525a78e5936 1-11,18-103
+  s_6d7f85b34e18a1::t_be044159bc79c0 12-17
+deploy/demo/docker-compose.yml
+  s_6d7f85b34e18a1::t_279a9d36bba6b4 20-21
+  s_6d7f85b34e18a1::t_ad694d0755eb11 1-19,22-40,42-59,61-75,78,80-104,106-111,113-157,161-166,168-175,177-200
+  s_6d7f85b34e18a1::t_a6108c29ad3ca0 105,112
+  s_6d7f85b34e18a1::t_e3d754c4ec792b 41
+  s_6d7f85b34e18a1::t_05b2601b744759 158-160
+  s_6d7f85b34e18a1::t_4b0766a2b78814 76-77,79
+  s_6d7f85b34e18a1::t_0f54272372cbdc 167,176
+  s_6d7f85b34e18a1::t_714443728a11e0 60
+deploy/README.md
+  s_6d7f85b34e18a1::t_c0eae4f3154961 1-4,8-66,68-133
+  s_6d7f85b34e18a1::t_76e1394b0874bc 7
+  s_6d7f85b34e18a1::t_dfed4e2a8f81c3 67
+  s_6d7f85b34e18a1::t_fa7f1a9c6ad18b 5-6
+deploy/demo/init-postgres.sh
+  s_6d7f85b34e18a1::t_9c6bd75758bd92 5-6
+  s_6d7f85b34e18a1::t_04af3ba06c48d1 1-4,7-13
+deploy/demo/nginx-subdomains.conf
+  s_6d7f85b34e18a1::t_0b4f8b76b83256 1-110
+deploy/demo/setup-docker-mirror.sh
+  s_6d7f85b34e18a1::t_5bbda0e12b6b8f 1-27
+deploy/demo/.env.example
+  s_6d7f85b34e18a1::t_29764cdac17678 24-25
+  s_6d7f85b34e18a1::t_cd70ecd29e377f 1-23,26-36
+deploy/demo/nginx.conf
+  s_6d7f85b34e18a1::t_b82b2d87820423 1-96
+deploy/demo/setup-swap.sh
+  s_6d7f85b34e18a1::t_2e7b206bd8567f 1-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.38-trip",
+  "base_commit_sha": "9fad9a77d8c1779d28ec1371f10ae739197e2580",
+  "prompts": {},
+  "sessions": {
+    "s_6d7f85b34e18a1": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "88a3d5a1-260b-4346-82aa-244915858d5b",
+        "model": "default"
+      },
+      "human_author": "liuyidi <liuyidi1993@gmail.com>"
+    }
+  }
+}
