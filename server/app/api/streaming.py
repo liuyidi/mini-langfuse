@@ -4,15 +4,13 @@ from __future__ import annotations
 import json
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Cookie, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
-from sqlalchemy.orm import Session
 
-from ..db import get_db
-from ..models import User
+from ..db import SessionLocal
+from ..services.auth import validate_session
 from ..services.event_bus import bus
 from .api_keys import _require_project_access
-from .auth import get_current_user
 
 router = APIRouter(prefix="/api/ui", tags=["streaming"])
 
@@ -20,13 +18,18 @@ router = APIRouter(prefix="/api/ui", tags=["streaming"])
 @router.get("/stream")
 async def stream_events(
     project_id: Optional[str] = Query(default=None),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    mlf_session: Optional[str] = Cookie(None),
 ):
     """SSE endpoint for real-time event streaming.
 
     Auth: session cookie (same as other /api/ui/* routes). EventSource cannot
     send Authorization headers, so Basic/API-key auth is intentionally not used.
+
+    Important: do **not** use ``Depends(get_db)`` / ``get_current_user`` here.
+    Those keep a SQLAlchemy session open until the response finishes; an SSE
+    stream can last hours and would exhaust the connection pool (idle in
+    transaction). Authz uses a short-lived session that is closed before the
+    stream starts.
 
     Clients connect with EventSource and receive events like:
     - trace_upserted: when a trace is created or updated
@@ -39,8 +42,23 @@ async def stream_events(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="project_id query parameter is required",
         )
+    if mlf_session is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+        )
 
-    _require_project_access(db, current_user.id, project_id, min_role="VIEWER")
+    db = SessionLocal()
+    try:
+        user = validate_session(db, mlf_session)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid or expired session",
+            )
+        _require_project_access(db, user.id, project_id, min_role="VIEWER")
+    finally:
+        db.close()
 
     async def event_generator():
         # Send initial connection event

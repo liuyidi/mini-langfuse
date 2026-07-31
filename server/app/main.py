@@ -21,7 +21,7 @@ from .api import streaming as streaming_api
 from .api import traces as traces_api
 from .api import users as users_api
 from .config import settings
-from .db import SessionLocal
+from .db import SessionLocal, pool_status
 from .models import ApiKey, Project
 from .services.auth import hash_password
 
@@ -77,8 +77,9 @@ app.add_middleware(
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
+def health() -> dict:
+    """Liveness + DB pool snapshot (warn when SSE/leaks exhaust connections)."""
+    return {"status": "ok", "db_pool": pool_status()}
 
 
 app.include_router(auth_api.router)
