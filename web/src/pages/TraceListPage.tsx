@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { api, Trace } from "../api/client";
@@ -7,26 +7,48 @@ import { formatCost, formatDuration, formatNum, formatTime } from "../lib/format
 import { useSSE } from "../lib/useSSE";
 import { useTraceFilters } from "../hooks/useTraceFilters";
 import TraceFilter from "../components/TraceFilter";
+import PaginationBar from "../components/PaginationBar";
 
 export default function TraceListPage() {
   const queryClient = useQueryClient();
   const { currentProject } = useAuth();
   const [newCount, setNewCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(50);
   const { filters, setFilters, clearFilters, toApiParams, hasActiveFilters } = useTraceFilters();
 
-  const apiParams = toApiParams();
+  const filterParams = toApiParams();
+  const filterKey = useMemo(() => JSON.stringify(filterParams), [filterParams]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filterKey]);
+
+  const apiParams = useMemo(
+    () => ({
+      ...filterParams,
+      page: String(page),
+      limit: String(limit),
+    }),
+    [filterParams, page, limit],
+  );
 
   const q = useQuery({
     queryKey: ["traces", apiParams],
     queryFn: () => api.listTraces(apiParams),
   });
 
-  // Handle new trace events from SSE
+  // Keep page in range if total shrinks (e.g. after filters)
+  useEffect(() => {
+    if (!q.data) return;
+    const totalPages = Math.max(1, Math.ceil(q.data.total / Math.max(1, limit)));
+    if (page > totalPages) setPage(totalPages);
+  }, [q.data, limit, page]);
+
   const handleTraceUpserted = useCallback(() => {
     setNewCount((c) => c + 1);
   }, []);
 
-  // Connect to SSE for real-time updates
   useSSE({
     projectId: currentProject?.id,
     enabled: Boolean(currentProject?.id),
@@ -36,6 +58,11 @@ export default function TraceListPage() {
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ["traces"] });
     setNewCount(0);
+  };
+
+  const handleLimitChange = (next: number) => {
+    setLimit(next);
+    setPage(1);
   };
 
   return (
@@ -62,7 +89,6 @@ export default function TraceListPage() {
           <span className="text-sm text-neutral-500">
             {!hasActiveFilters && q.data ? `${q.data.total} total` : ""}
           </span>
-          {/* Export dropdown */}
           <div className="relative group">
             <button className="inline-flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-700 border border-neutral-200 rounded px-2.5 py-1 hover:bg-neutral-50">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5">
@@ -98,7 +124,6 @@ export default function TraceListPage() {
         </div>
       </div>
 
-      {/* Filter bar */}
       <TraceFilter
         filters={filters}
         onChange={setFilters}
@@ -171,6 +196,14 @@ export default function TraceListPage() {
               )}
             </tbody>
           </table>
+          <PaginationBar
+            page={page}
+            limit={limit}
+            total={q.data.total}
+            onPageChange={setPage}
+            onLimitChange={handleLimitChange}
+            disabled={q.isFetching}
+          />
         </div>
       )}
     </div>

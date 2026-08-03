@@ -1,10 +1,37 @@
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { api, SessionSummary } from "../api/client";
 import { formatCost, formatNum, formatTime } from "../lib/format";
+import PaginationBar from "../components/PaginationBar";
 
 export default function SessionListPage() {
-  const q = useQuery({ queryKey: ["sessions"], queryFn: () => api.listSessions() });
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(50);
+
+  const apiParams = useMemo(
+    () => ({
+      page: String(page),
+      limit: String(limit),
+    }),
+    [page, limit],
+  );
+
+  const q = useQuery({
+    queryKey: ["sessions", apiParams],
+    queryFn: () => api.listSessions(apiParams),
+  });
+
+  useEffect(() => {
+    if (!q.data) return;
+    const totalPages = Math.max(1, Math.ceil(q.data.total / Math.max(1, limit)));
+    if (page > totalPages) setPage(totalPages);
+  }, [q.data, limit, page]);
+
+  const handleLimitChange = (next: number) => {
+    setLimit(next);
+    setPage(1);
+  };
 
   return (
     <div className="p-6">
@@ -64,6 +91,14 @@ export default function SessionListPage() {
               )}
             </tbody>
           </table>
+          <PaginationBar
+            page={page}
+            limit={limit}
+            total={q.data.total}
+            onPageChange={setPage}
+            onLimitChange={handleLimitChange}
+            disabled={q.isFetching}
+          />
         </div>
       )}
     </div>
