@@ -2,7 +2,9 @@
 
 > 记录 2026-07-27 在阿里云经济型 e（2C2G）上部署  
 > **mini-langfuse + minibot**（可选 minikb）到 `https://mlf.liuyidi.me` / `https://bot.liuyidi.me` 的完整流程与踩坑。  
-> 配置模板见 [`../deploy/demo/`](../deploy/demo/)。
+> 配置模板见 [`../deploy/demo/`](../deploy/demo/)。  
+>  
+> **后续**：mlf 单机迁腾讯云见 [`tencent-lighthouse-mlf-migrate.md`](./tencent-lighthouse-mlf-migrate.md)；minibot / minikb 独立部署分别见各自仓库 `deploy/`。
 
 ---
 

@@ -1,5 +1,10 @@
 # 面试 Demo：单机三件套（2C2G 可用）
 
+> **状态：历史 / 面试同机方案。**  
+> 日常稳定跑 mlf 请改用上级目录的生产 Compose：[`../docker-compose.prod.yml`](../docker-compose.prod.yml) + [`../README.md`](../README.md)。  
+> 迁到腾讯云只跑 mlf：见 [`../../docs/tencent-lighthouse-mlf-migrate.md`](../../docs/tencent-lighthouse-mlf-migrate.md)。  
+> **minibot / minikb** 的独立部署文档请分别放在各自仓库的 `deploy/`，不要继续往本目录加新应用。
+
 在一台小 ECS 上同时跑 **mini-langfuse + minibot**，可选再加 **minikb**。
 
 **完整上线实录（含全部踩坑）**：见仓库根目录 [`docs/aliyun-ecs-demo-deploy.md`](../../docs/aliyun-ecs-demo-deploy.md)。

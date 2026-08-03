@@ -1,9 +1,21 @@
-# 阿里云 ECS 部署指南
+# mini-langfuse 单机部署指南
 
-单机 Docker Compose + 宿主机 Nginx HTTPS，适合小团队内网/公网试用。
+本目录只负责 **mini-langfuse**（web + server + Postgres）：Docker Compose + 宿主机 Nginx HTTPS。  
+适用于阿里云 ECS、腾讯云轻量等任意单机；示例域名以 `mlf.liuyidi.me` 为例。
 
-> **面试 / 同机三件套 Demo**（mini-langfuse + minibot + 可选 minikb，2C2G）：见 [`demo/README.md`](./demo/README.md)。  
-> **完整上线实录与踩坑**（liuyidi.me）：见 [`../docs/aliyun-ecs-demo-deploy.md`](../docs/aliyun-ecs-demo-deploy.md)。
+> **迁到腾讯云 4C4G（从阿里云三件套拆出 mlf）**：见 [`../docs/tencent-lighthouse-mlf-migrate.md`](../docs/tencent-lighthouse-mlf-migrate.md)。
+
+### 仓库边界
+
+| 路径 | 内容 |
+|------|------|
+| `mini-langfuse/deploy/`（本目录） | **仅 mlf** 生产 Compose / Nginx / `.env` 模板 |
+| `mini-langfuse/deploy/demo/` | **历史** 面试三件套（mlf+bot+kb 同机，2C2G）；不再作为 mlf 主路径 |
+| `minibot/deploy/` | minibot 独立部署文档（在 minibot 仓库维护） |
+| `minikb/deploy/` | minikb 独立部署文档（在 minikb 仓库维护） |
+
+> 面试 / 同机三件套 Demo：见 [`demo/README.md`](./demo/README.md)。  
+> 阿里云 2C2G 上线实录：见 [`../docs/aliyun-ecs-demo-deploy.md`](../docs/aliyun-ecs-demo-deploy.md)。
 
 ## 架构
 

@@ -28,4 +28,7 @@ build/
 .vscode/
 *.log
 
+# SSH / TLS keys (never commit)
+*.pem
+
 # Alembic - keep migrations, ignore local cruft
