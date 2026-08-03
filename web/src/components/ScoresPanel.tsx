@@ -26,6 +26,14 @@ function scoreBg(value: number | null, dataType: string): string {
   return "bg-red-50 border-red-200";
 }
 
+const HUMAN_FEEDBACK_REASON_LABELS: Record<string, string> = {
+  incorrect: "Incorrect",
+  incomplete: "Incomplete",
+  style: "Style or format",
+  tool: "Tool execution",
+  other: "Other",
+};
+
 export default function ScoresPanel({ traceId, observationId }: Props) {
   const qc = useQueryClient();
   const q = useQuery({
@@ -265,19 +273,38 @@ export default function ScoresPanel({ traceId, observationId }: Props) {
 function ScoreRow({ score, onDelete }: { score: Score; onDelete?: () => void }) {
   const displayValue = score.data_type === "CATEGORICAL" ? score.string_value : score.value;
   const numValue = typeof score.value === "number" ? score.value : null;
+  const isFeedbackReason = score.source === "HUMAN" && score.name === "user-feedback-reason";
+  const isThumbsFeedback = score.source === "HUMAN" && score.name === "user-feedback";
+  const feedbackReason = score.string_value
+    ? HUMAN_FEEDBACK_REASON_LABELS[score.string_value] ?? score.string_value
+    : "—";
+  const primaryLabel = isFeedbackReason
+    ? "Feedback reason"
+    : isThumbsFeedback
+      ? "User feedback"
+      : score.name;
+  const primaryValue = isFeedbackReason
+    ? feedbackReason
+    : isThumbsFeedback && score.data_type === "BOOLEAN"
+      ? (score.value === 1 ? "Helpful" : "Not helpful")
+      : displayValue;
 
   return (
-    <div className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-neutral-50 group">
-      <span className="font-medium text-sm text-neutral-700 min-w-[80px]">{score.name}</span>
-      <span className={`font-semibold text-sm tabular-nums ${scoreColor(numValue, score.data_type)}`}>
-        {displayValue}
-      </span>
-      {score.comment && (
-        <span className="text-neutral-500 text-xs italic truncate max-w-[200px]">
-          "{score.comment}"
-        </span>
-      )}
-      <span className="text-neutral-400 text-xs ml-auto">
+    <div className="flex items-start gap-2 rounded px-2 py-1.5 hover:bg-neutral-50 group">
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          <span className="font-medium text-sm text-neutral-700">{primaryLabel}</span>
+          <span className={`font-semibold text-sm tabular-nums ${scoreColor(numValue, score.data_type)}`}>
+            {primaryValue}
+          </span>
+        </div>
+        {score.comment && (
+          <p className="mt-1 whitespace-pre-wrap break-words text-xs leading-5 text-neutral-500">
+            <span className="font-medium text-neutral-600">Note: </span>{score.comment}
+          </p>
+        )}
+      </div>
+      <span className="shrink-0 pt-0.5 text-xs text-neutral-400">
         {formatTime(score.created_at)}
       </span>
       {onDelete && (
