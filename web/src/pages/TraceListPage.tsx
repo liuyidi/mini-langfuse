@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { Download } from "lucide-react";
 import { api, Trace } from "../api/client";
 import { useAuth } from "../lib/auth";
+import { getProjectAuthHeader } from "../lib/projectAuth";
 import { formatCost, formatDuration, formatNum, formatTime } from "../lib/format";
 import { useSSE } from "../lib/useSSE";
 import { useTraceFilters } from "../hooks/useTraceFilters";
@@ -60,6 +62,23 @@ export default function TraceListPage() {
     setNewCount(0);
   };
 
+  const downloadExport = async (format: "json" | "csv") => {
+    const params = new URLSearchParams(toApiParams());
+    params.set("format", format);
+    params.set("limit", "1000");
+    const r = await fetch(`/api/public/traces/export?${params.toString()}`, {
+      headers: { Authorization: getProjectAuthHeader() },
+    });
+    if (!r.ok) throw new Error(`Export failed: ${r.status} ${r.statusText}`);
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `traces-export.${format}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleLimitChange = (next: number) => {
     setLimit(next);
     setPage(1);
@@ -91,30 +110,18 @@ export default function TraceListPage() {
           </span>
           <div className="relative group">
             <button className="inline-flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-700 border border-neutral-200 rounded px-2.5 py-1 hover:bg-neutral-50">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5">
-                <path d="M8 2v8M4 7l4 4 4-4M2 12v2h12v-2" />
-              </svg>
+              <Download className="w-3.5 h-3.5" />
               Export
             </button>
             <div className="absolute right-0 mt-1 w-32 bg-white border border-neutral-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
               <button
-                onClick={() => {
-                  const params = new URLSearchParams(toApiParams());
-                  params.set("format", "json");
-                  params.set("limit", "1000");
-                  window.open(`/api/public/traces/export?${params.toString()}`, "_blank");
-                }}
+                onClick={() => void downloadExport("json")}
                 className="w-full text-left px-3 py-2 text-xs hover:bg-neutral-50"
               >
                 Export as JSON
               </button>
               <button
-                onClick={() => {
-                  const params = new URLSearchParams(toApiParams());
-                  params.set("format", "csv");
-                  params.set("limit", "1000");
-                  window.open(`/api/public/traces/export?${params.toString()}`, "_blank");
-                }}
+                onClick={() => void downloadExport("csv")}
                 className="w-full text-left px-3 py-2 text-xs hover:bg-neutral-50"
               >
                 Export as CSV

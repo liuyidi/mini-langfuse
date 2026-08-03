@@ -1,9 +1,10 @@
 # mini-langfuse
 
 A minimal, from-scratch re-implementation of [Langfuse](https://langfuse.com) built to understand its internals.
-Backend: **FastAPI + SQLAlchemy + SQLite**. Frontend: **React + Vite + TypeScript + Tailwind**. SDK: **Python + httpx**.
+Backend: **FastAPI + SQLAlchemy + SQLite/PostgreSQL**. Frontend: **React + Vite + TypeScript + Tailwind**. SDK: **Python + httpx**.
 
-📄 See [`mini-langfuse-plan.md`](./mini-langfuse-plan.md) for the full design doc, data model, and 5-milestone roadmap. Extension directions (M6+) live in [`mini-langfuse-plan-v2.md`](./mini-langfuse-plan-v2.md).
+📄 See [`mini-langfuse-plan.md`](./docs/plans/mini-langfuse-plan.md) for the full design doc, data model, and 5-milestone roadmap. Extension directions (M6+) live in [`mini-langfuse-plan-v2.md`](./docs/plans/mini-langfuse-plan-v2.md).
+🧭 Active product roadmap: [`mini-langfuse-plan-v3.md`](./docs/plans/mini-langfuse-plan-v3.md).
 
 🚀 **Aliyun ECS demo deploy (liuyidi.me) + pitfalls**: [`docs/aliyun-ecs-demo-deploy.md`](./docs/aliyun-ecs-demo-deploy.md) · templates in [`deploy/demo/`](./deploy/demo/).
 
@@ -37,6 +38,13 @@ Backend: **FastAPI + SQLAlchemy + SQLite**. Frontend: **React + Vite + TypeScrip
                              │ Tailwind SPA │
                              │ /traces /sessions /prompts
                              └──────────────┘
+```
+
+Queue-based tracing is now available as an optional data-plane path:
+
+```
+SDK / app -> FastAPI ingestion -> Redis Stream -> Python worker -> ClickHouse
+                                ↘ PostgreSQL keeps control-plane data
 ```
 
 Data model highlights:
@@ -75,7 +83,10 @@ docker compose up --build -d
 
 - UI: http://localhost:8080
 - API: http://localhost:8000  (health probe: http://localhost:8000/health)
-- SQLite DB is persisted in the `mlf_data` volume.
+- PostgreSQL, Redis, ClickHouse, and the worker are all started by `docker compose`.
+- PostgreSQL data is persisted in the `mlf_pg` volume.
+- ClickHouse data is persisted in the `mlf_clickhouse` volume.
+- Ingestion defaults to the queue-first path when `MLF_INGESTION_QUEUE_URL` is set.
 - Playground uses the built-in `mock` provider by default. To use real providers, pass keys through the compose env:
   `OPENAI_API_KEY=... ANTHROPIC_API_KEY=... docker compose up --build -d`
 
@@ -92,6 +103,21 @@ Reload the UI and you'll see 5 traces, a 3-turn session, 2 prompt versions with 
 Demo credentials (hardcoded — override via `MLF_DEMO_PUBLIC_KEY` / `MLF_DEMO_SECRET_KEY`):
 - `public_key = pk-lf-demo`
 - `secret_key = sk-lf-demo`
+
+## Local Queue Stack
+
+If you want to run the queue-first ingestion path locally without the full UI stack:
+
+```bash
+docker compose up --build db redis clickhouse server worker
+```
+
+Useful local connection URLs:
+- Redis: `redis://localhost:6379/0`
+- ClickHouse HTTP: `http://localhost:8123`
+- ClickHouse Native: `localhost:9000`
+
+The worker reads from Redis Stream `mlf:ingestion` and writes to ClickHouse tables `default.traces` and `default.observations`.
 
 ## Quickstart — Dev mode (3 terminals, hot reload)
 

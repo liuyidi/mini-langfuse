@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import type { ReactNode } from "react";
+import { ArrowLeft } from "lucide-react";
 import { api, Trace } from "../api/client";
 import { formatCost, formatDuration, formatNum, formatTime } from "../lib/format";
 
@@ -17,7 +18,10 @@ export default function SessionDetailPage() {
     <div className="p-6 max-w-[1200px] mx-auto">
       <div className="mb-4 text-sm text-neutral-500">
         <Link to="/sessions" className="hover:underline">
-          ← Back to sessions
+          <span className="inline-flex items-center gap-1">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back to sessions
+          </span>
         </Link>
       </div>
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
+import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
 import { datasetsApi, Dataset, DatasetItem, DatasetRun } from "../api/datasets";
 
 export default function DatasetDetailPage() {
@@ -35,7 +36,12 @@ export default function DatasetDetailPage() {
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="mb-4 text-sm text-neutral-500">
-        <Link to="/datasets" className="hover:underline">← Datasets</Link>
+        <Link to="/datasets" className="hover:underline">
+          <span className="inline-flex items-center gap-1">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Datasets
+          </span>
+        </Link>
       </div>
 
       {/* Header */}
@@ -158,9 +164,10 @@ function AddItemButton({ datasetId }: { datasetId: string }) {
   return (
     <button
       onClick={() => setShowForm(true)}
-      className="bg-neutral-900 text-white rounded px-3 py-1.5 text-sm font-medium hover:bg-neutral-800"
+      className="inline-flex items-center gap-1 bg-neutral-900 text-white rounded px-3 py-1.5 text-sm font-medium hover:bg-neutral-800"
     >
-      + Add Item
+      <Plus className="h-3.5 w-3.5" />
+      Add Item
     </button>
   );
 }
@@ -251,9 +258,9 @@ function RunsTab({ datasetId, runs, isLoading }: { datasetId: string; runs: Data
         <button
           onClick={() => createMut.mutate({ name: `Run ${runs.length + 1}` })}
           disabled={createMut.isPending}
-          className="bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800 disabled:opacity-50"
+          className="inline-flex items-center gap-1 bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800 disabled:opacity-50"
         >
-          {createMut.isPending ? "Starting..." : "Start New Run"}
+          {createMut.isPending ? "Starting..." : (<><Plus className="h-3.5 w-3.5" /> Start New Run</>)}
         </button>
       </div>
 
@@ -301,9 +308,10 @@ function RunsTab({ datasetId, runs, isLoading }: { datasetId: string; runs: Data
                   <td className="px-4 py-2 text-center">
                     <Link
                       to={`/datasets/${datasetId}/runs/${run.id}`}
-                      className="text-blue-600 hover:underline text-xs"
+                      className="inline-flex items-center gap-1 text-blue-600 hover:underline text-xs"
                     >
-                      View →
+                      View
+                      <ArrowRight className="h-3 w-3" />
                     </Link>
                   </td>
                 </tr>

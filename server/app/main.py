@@ -12,6 +12,7 @@ from .api import auth as auth_api
 from .api import dashboard as dashboard_api
 from .api import datasets as datasets_api
 from .api import evaluations as evaluations_api
+from .api import organizations as organizations_api
 from .api import ingestion as ingestion_api
 from .api import playground as playground_api
 from .api import prompts as prompts_api
@@ -83,6 +84,7 @@ def health() -> dict:
 
 
 app.include_router(auth_api.router)
+app.include_router(organizations_api.router)
 app.include_router(api_keys_api.router)
 app.include_router(ingestion_api.router)
 app.include_router(traces_api.router)

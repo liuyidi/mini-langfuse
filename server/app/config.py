@@ -27,6 +27,18 @@ class Settings(BaseSettings):
     openai_base_url: str = "https://api.openai.com/v1"
     anthropic_api_key: str = ""
 
+    # Ingestion queue (Redis Streams)
+    ingestion_queue_url: str = ""
+    ingestion_queue_stream: str = "mlf:ingestion"
+    ingestion_queue_group: str = "mlf-worker"
+    ingestion_queue_maxlen: int = 100000
+
+    # ClickHouse read path for traces / observations
+    clickhouse_url: str = ""
+    clickhouse_database: str = "default"
+    clickhouse_user: str = "default"
+    clickhouse_password: str = ""
+
     # CORS - list or comma-separated string (env var: MLF_CORS_ORIGINS)
     cors_origins: Union[list[str], str] = [
         "http://localhost:5173",

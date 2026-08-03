@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { ArrowLeft, ArrowRight, FlaskConical, Plus, Play, Shield, Sparkles, Trash2, Wrench } from "lucide-react";
 import { evaluationApi, Evaluator } from "../api/evaluation";
 import { templatesApi, EvaluatorTemplate } from "../api/templates";
 
@@ -50,9 +51,19 @@ export default function EvaluatorsPage() {
         </div>
         <button
           onClick={() => setStep(step === "idle" ? "select-template" : "idle")}
-          className="bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800"
+          className="inline-flex items-center gap-1 bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800"
         >
-          {step !== "idle" ? "Cancel" : "+ New Evaluator"}
+          {step !== "idle" ? (
+            <>
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Cancel
+            </>
+          ) : (
+            <>
+              <Plus className="h-3.5 w-3.5" />
+              New Evaluator
+            </>
+          )}
         </button>
       </div>
 
@@ -84,9 +95,10 @@ export default function EvaluatorsPage() {
               <p className="text-neutral-500 mb-4">No evaluators yet. Create one to start scoring traces automatically.</p>
               <button
                 onClick={() => setStep("select-template")}
-                className="bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800"
+                className="inline-flex items-center gap-1 bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800"
               >
-                + Create Evaluator
+                <Plus className="h-3.5 w-3.5" />
+                Create Evaluator
               </button>
             </div>
           )}
@@ -101,8 +113,9 @@ export default function EvaluatorsPage() {
 
           <div className="mt-8">
             <h2 className="text-lg font-semibold mb-4">Evaluation Runs</h2>
-            <Link to="/evaluations/runs" className="text-blue-600 hover:underline text-sm">
-              View all evaluation runs →
+            <Link to="/evaluations/runs" className="inline-flex items-center gap-1 text-blue-600 hover:underline text-sm">
+              View all evaluation runs
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </>
@@ -154,7 +167,17 @@ function TemplateGallery({
                       className="text-left bg-neutral-50 hover:bg-neutral-100 border border-neutral-200 hover:border-neutral-300 rounded-lg p-3 transition-colors"
                     >
                       <div className="flex items-start gap-2">
-                        <span className="text-xl">{t.icon}</span>
+                        <span className="text-xl">
+                          {category === "Safety" ? (
+                            <Shield className="h-5 w-5" />
+                          ) : category === "Relevance" ? (
+                            <FlaskConical className="h-5 w-5" />
+                          ) : category === "Custom" ? (
+                            <Wrench className="h-5 w-5" />
+                          ) : (
+                            <Sparkles className="h-5 w-5" />
+                          )}
+                        </span>
                         <div className="flex-1 min-w-0">
                           <div className="font-medium text-sm">{t.name}</div>
                           <div className="text-xs text-neutral-500 mt-0.5 line-clamp-2">
@@ -241,9 +264,11 @@ function ConfigureEvaluatorForm({
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-neutral-200 p-4 mb-6">
       <div className="flex items-center gap-3 mb-4">
-        <button type="button" onClick={onBack} className="text-neutral-400 hover:text-neutral-700">←</button>
+        <button type="button" onClick={onBack} className="text-neutral-400 hover:text-neutral-700">
+          <ArrowLeft className="h-4 w-4" />
+        </button>
         <div>
-          <h3 className="font-medium">Configure: {template.icon} {template.name}</h3>
+          <h3 className="font-medium">Configure: {template.name}</h3>
           <p className="text-xs text-neutral-500">{template.description}</p>
         </div>
       </div>
@@ -315,7 +340,11 @@ function ConfigureEvaluatorForm({
             <div className="flex flex-wrap gap-1.5 mb-2">
               {traceVars.map((v) => (
                 <span key={v} className="text-[11px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-mono">
-                  {v} ← trace data
+                  <span className="inline-flex items-center gap-1">
+                    {v}
+                    <ArrowLeft className="h-3 w-3" />
+                    trace data
+                  </span>
                 </span>
               ))}
             </div>
@@ -324,7 +353,11 @@ function ConfigureEvaluatorForm({
             <div className="flex flex-wrap gap-1.5">
               {customVars.map((v) => (
                 <span key={v} className="text-[11px] px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 font-mono">
-                  {v} ← custom
+                  <span className="inline-flex items-center gap-1">
+                    {v}
+                    <ArrowLeft className="h-3 w-3" />
+                    custom
+                  </span>
                 </span>
               ))}
             </div>
@@ -337,14 +370,17 @@ function ConfigureEvaluatorForm({
 
       <div className="flex justify-end mt-4 gap-2">
         <button type="button" onClick={onBack} className="text-sm text-neutral-500 hover:text-neutral-700 px-4 py-2">
-          Back to templates
+          <span className="inline-flex items-center gap-1">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back to templates
+          </span>
         </button>
         <button
           type="submit"
           disabled={loading}
-          className="bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800 disabled:opacity-50"
+          className="inline-flex items-center gap-1 bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800 disabled:opacity-50"
         >
-          {loading ? "Creating..." : "Create Evaluator"}
+          {loading ? "Creating..." : (<><Plus className="h-3.5 w-3.5" /> Create Evaluator</>)}
         </button>
       </div>
     </form>
@@ -399,9 +435,9 @@ function EvaluatorCard({ evaluator, onDelete }: { evaluator: Evaluator; onDelete
           <button
             onClick={handleStartRun}
             disabled={running || !evaluator.is_active}
-            className="text-sm bg-blue-600 text-white rounded px-3 py-1 hover:bg-blue-700 disabled:opacity-50"
+            className="inline-flex items-center gap-1 text-sm bg-blue-600 text-white rounded px-3 py-1 hover:bg-blue-700 disabled:opacity-50"
           >
-            {running ? "Starting..." : "Start Run"}
+            {running ? "Starting..." : (<><Play className="h-3.5 w-3.5" /> Start Run</>)}
           </button>
           <Link
             to={`/evaluations/runs?evaluatorId=${evaluator.id}`}
@@ -410,7 +446,10 @@ function EvaluatorCard({ evaluator, onDelete }: { evaluator: Evaluator; onDelete
             View runs
           </Link>
           <button onClick={onDelete} className="text-sm text-red-600 hover:text-red-800">
-            Delete
+            <span className="inline-flex items-center gap-1">
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
+            </span>
           </button>
         </div>
       </div>

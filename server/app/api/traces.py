@@ -4,6 +4,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import logging
 from datetime import datetime
 from typing import Optional
 
@@ -13,12 +14,30 @@ from sqlalchemy import and_, case, func as sqlfunc, or_, select, text
 from sqlalchemy.orm import Session
 
 from ..auth import require_project
+from ..config import settings
 from ..db import get_db
 from ..models import Observation, Trace
 from ..schemas.trace import TraceDetail, TraceListResponse, TraceOut
+from ..services.clickhouse import (
+    ClickHouseReader,
+    aggregate_metrics_from_rows,
+    build_tree_from_rows,
+)
 from ..services.tree import aggregate_metrics, build_tree, trace_to_dict
 
 router = APIRouter(prefix="/api/public/traces", tags=["traces"])
+LOG = logging.getLogger("mini_langfuse")
+
+
+def _clickhouse_reader() -> ClickHouseReader | None:
+    if not settings.clickhouse_url:
+        return None
+    return ClickHouseReader(
+        base_url=settings.clickhouse_url,
+        database=settings.clickhouse_database,
+        user=settings.clickhouse_user,
+        password=settings.clickhouse_password,
+    )
 
 
 @router.get("", response_model=TraceListResponse)
@@ -54,6 +73,36 @@ def list_traces(
     page: int = Query(default=1, ge=1),
 ) -> TraceListResponse:
     """List traces with advanced filtering."""
+    ch = _clickhouse_reader()
+    if ch is not None:
+        try:
+            rows, total = ch.list_traces(
+                project_id=project_id,
+                user_id=user_id,
+                session_id=session_id,
+                name=name,
+                from_timestamp=from_timestamp,
+                to_timestamp=to_timestamp,
+                tags=tags,
+                tags_all=tags_all,
+                search=search,
+                model=model,
+                status=status,
+                level=level,
+                order_by=order_by,
+                order_direction=order_direction,
+                limit=limit,
+                page=page,
+            )
+            return TraceListResponse(
+                data=[TraceOut(**row) for row in rows],
+                total=total,
+                page=page,
+                limit=limit,
+            )
+        except Exception as exc:  # noqa: BLE001
+            LOG.warning("ClickHouse trace list fallback to PostgreSQL: %s", exc)
+
     conditions = [Trace.project_id == project_id]
 
     # Basic filters
@@ -430,6 +479,21 @@ def get_trace(
     project_id: str = Depends(require_project),
     db: Session = Depends(get_db),
 ) -> TraceDetail:
+    ch = _clickhouse_reader()
+    if ch is not None:
+        try:
+            trace_row, obs_rows = ch.get_trace(project_id=project_id, trace_id=trace_id)
+            if trace_row is None:
+                raise HTTPException(status_code=404, detail="Trace not found")
+
+            tree = build_tree_from_rows(obs_rows)
+            agg = aggregate_metrics_from_rows(obs_rows)
+            return TraceDetail(**trace_row, **agg, observations=tree)
+        except HTTPException:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            LOG.warning("ClickHouse trace detail fallback to PostgreSQL: %s", exc)
+
     trace = db.get(Trace, trace_id)
     if trace is None or trace.project_id != project_id:
         raise HTTPException(status_code=404, detail="Trace not found")

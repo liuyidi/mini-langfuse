@@ -1,10 +1,8 @@
 // Trace filter bar component (M18)
 import { useQuery } from "@tanstack/react-query";
+import { ArrowUpDown, Search } from "lucide-react";
 import { TraceFilters } from "../hooks/useTraceFilters";
-
-const DEMO_PK = "pk-lf-demo";
-const DEMO_SK = "sk-lf-demo";
-const authHeader = "Basic " + btoa(`${DEMO_PK}:${DEMO_SK}`);
+import { getProjectAuthHeader } from "../lib/projectAuth";
 
 type Props = {
   filters: TraceFilters;
@@ -15,7 +13,7 @@ type Props = {
 
 async function fetchFacets() {
   const r = await fetch("/api/public/traces/facets", {
-    headers: { Authorization: authHeader },
+    headers: { Authorization: getProjectAuthHeader() },
   });
   if (!r.ok) throw new Error("Failed to fetch facets");
   return r.json();
@@ -38,7 +36,7 @@ export default function TraceFilter({ filters, onChange, onClear, hasActiveFilte
       {/* Search row */}
       <div className="flex items-center gap-2 mb-3">
         <div className="relative flex-1">
-          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">🔍</span>
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
           <input
             type="text"
             value={filters.search}
@@ -180,7 +178,7 @@ export default function TraceFilter({ filters, onChange, onClear, hasActiveFilte
           className="text-xs border border-neutral-200 rounded px-1.5 py-1 bg-white hover:bg-neutral-50"
           title={filters.orderDirection === "desc" ? "Descending" : "Ascending"}
         >
-          {filters.orderDirection === "desc" ? "↓" : "↑"}
+          <ArrowUpDown className="h-3.5 w-3.5" />
         </button>
       </div>
     </div>

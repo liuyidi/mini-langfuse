@@ -1,13 +1,10 @@
 // Scores Analytics API client (M16)
-
-const DEMO_PK = "pk-lf-demo";
-const DEMO_SK = "sk-lf-demo";
-const authHeader = "Basic " + btoa(`${DEMO_PK}:${DEMO_SK}`);
+import { getProjectAuthHeader } from "../lib/projectAuth";
 
 async function scoreReq<T>(path: string): Promise<T> {
   const r = await fetch(path, {
     headers: {
-      Authorization: authHeader,
+      Authorization: getProjectAuthHeader(),
       "Content-Type": "application/json",
     },
   });

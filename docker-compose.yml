@@ -17,6 +17,32 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: mlf-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: mlf-clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - mlf_clickhouse:/var/lib/clickhouse
+      - ./worker/clickhouse/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   server:
     build: ./server
     container_name: mlf-server
@@ -25,9 +51,23 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
     environment:
       # PostgreSQL (M9) - use Postgres by default in docker-compose
       MLF_DATABASE_URL: postgresql+psycopg://mlf:mlf@db:5432/minilangfuse
+      # Redis Streams ingestion queue
+      MLF_INGESTION_QUEUE_URL: redis://redis:6379/0
+      MLF_INGESTION_QUEUE_STREAM: mlf:ingestion
+      MLF_INGESTION_QUEUE_GROUP: mlf-worker
+      MLF_INGESTION_QUEUE_MAXLEN: 100000
+      # ClickHouse read path
+      MLF_CLICKHOUSE_URL: http://clickhouse:8123
+      MLF_CLICKHOUSE_DATABASE: default
+      MLF_CLICKHOUSE_USER: default
+      MLF_CLICKHOUSE_PASSWORD: ""
       # Comma-separated allowed origins. Loosely permissive for local demos.
       MLF_CORS_ORIGINS: "http://localhost:8080,http://127.0.0.1:8080,http://localhost:5173,http://127.0.0.1:5173"
       # Optional: pass through provider keys for the Playground (M8)
@@ -43,6 +83,27 @@ services:
       timeout: 3s
       retries: 5
 
+  worker:
+    build: ./worker
+    container_name: mlf-worker
+    depends_on:
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    environment:
+      MLF_WORKER_MODE: redis
+      MLF_REDIS_URL: redis://redis:6379/0
+      MLF_REDIS_STREAM: mlf:ingestion
+      MLF_REDIS_GROUP: mlf-worker
+      MLF_REDIS_CONSUMER: worker-1
+      MLF_CLICKHOUSE_URL: http://clickhouse:8123
+      MLF_CLICKHOUSE_DATABASE: default
+      MLF_CLICKHOUSE_USER: default
+      MLF_CLICKHOUSE_PASSWORD: ""
+      MLF_WORKER_BATCH_SIZE: 100
+    command: ["python", "-m", "mini_langfuse_worker"]
+
   web:
     build: ./web
     container_name: mlf-web
@@ -54,3 +115,4 @@ services:
 
 volumes:
   mlf_pg:
+  mlf_clickhouse:

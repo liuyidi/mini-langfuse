@@ -1,0 +1,2 @@
+"""Mini Langfuse worker package."""
+

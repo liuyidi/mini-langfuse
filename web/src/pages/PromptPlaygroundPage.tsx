@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import { ArrowLeft, Plus, Play } from "lucide-react";
 import { api, PromptVersion } from "../api/client";
 import { formatCost, formatDuration } from "../lib/format";
 
@@ -171,7 +172,10 @@ export default function PromptPlaygroundPage() {
     <div className="p-6 max-w-[1400px] mx-auto">
       <div className="mb-4 text-sm text-neutral-500 flex items-center gap-3">
         <Link to={`/prompts/${encodeURIComponent(decoded)}`} className="hover:underline">
-          ← Back to prompt
+          <span className="inline-flex items-center gap-1">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back to prompt
+          </span>
         </Link>
         <span>·</span>
         <Link to="/prompts" className="hover:underline">
@@ -241,9 +245,9 @@ export default function PromptPlaygroundPage() {
           <button
             onClick={() => run.mutate()}
             disabled={run.isPending}
-            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm rounded px-4 py-1.5 font-medium ml-auto"
+            className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm rounded px-4 py-1.5 font-medium ml-auto"
           >
-            {run.isPending ? "Running…" : "▶ Run"}
+            {run.isPending ? "Running…" : (<><Play className="h-3.5 w-3.5" /> Run</>)}
           </button>
           <button
             onClick={() => setSaveOpen(true)}
@@ -276,9 +280,10 @@ export default function PromptPlaygroundPage() {
             onClick={() =>
               setMessages((ms) => [...ms, { role: "user", content: "" }])
             }
-            className="text-sm text-blue-600 hover:underline"
+            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
           >
-            + Add message
+            <Plus className="h-3.5 w-3.5" />
+            Add message
           </button>
         </div>
 

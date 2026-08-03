@@ -2,11 +2,8 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { api, Trace } from "../api/client";
+import { getProjectAuthHeader } from "../lib/projectAuth";
 import { formatCost, formatDuration, formatNum, formatTime } from "../lib/format";
-
-const DEMO_PK = "pk-lf-demo";
-const DEMO_SK = "sk-lf-demo";
-const authHeader = "Basic " + btoa(`${DEMO_PK}:${DEMO_SK}`);
 
 export default function AnnotationQueuePage() {
   const queryClient = useQueryClient();
@@ -24,7 +21,7 @@ export default function AnnotationQueuePage() {
     queryKey: ["scores", "all"],
     queryFn: async () => {
       const r = await fetch(`/api/public/scores?limit=500`, {
-        headers: { Authorization: authHeader },
+        headers: { Authorization: getProjectAuthHeader() },
       });
       if (!r.ok) throw new Error("Failed to fetch scores");
       return r.json();
@@ -171,7 +168,7 @@ function TraceRow({
       const r = await fetch("/api/public/scores", {
         method: "POST",
         headers: {
-          Authorization: authHeader,
+          Authorization: getProjectAuthHeader(),
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

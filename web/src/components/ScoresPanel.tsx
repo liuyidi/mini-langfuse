@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, Score } from "../api/client";
+import { Plus, Trash2 } from "lucide-react";
+import { getProjectAuthHeader } from "../lib/projectAuth";
 import { formatTime } from "../lib/format";
-
-const DEMO_PK = "pk-lf-demo";
-const DEMO_SK = "sk-lf-demo";
-const authHeader = "Basic " + btoa(`${DEMO_PK}:${DEMO_SK}`);
 
 type Props = { traceId: string; observationId?: string | null };
 
@@ -77,7 +75,7 @@ export default function ScoresPanel({ traceId, observationId }: Props) {
     mutationFn: async (scoreId: string) => {
       const r = await fetch(`/api/public/scores/${scoreId}`, {
         method: "DELETE",
-        headers: { Authorization: authHeader },
+        headers: { Authorization: getProjectAuthHeader() },
       });
       if (!r.ok) throw new Error("Failed to delete score");
       return r.json();
@@ -113,9 +111,9 @@ export default function ScoresPanel({ traceId, observationId }: Props) {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+          className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
         >
-          {showForm ? "Cancel" : "+ Add Score"}
+          {showForm ? "Cancel" : (<><Plus className="h-3 w-3" /> Add Score</>)}
         </button>
       </div>
 
@@ -233,7 +231,7 @@ export default function ScoresPanel({ traceId, observationId }: Props) {
       {/* Score list */}
       {relevant.length === 0 ? (
         <div className="text-sm text-neutral-400 text-center py-4">
-          No scores yet. Click "+ Add Score" or use quick rate to annotate.
+          No scores yet. Click "Add Score" or use quick rate to annotate.
         </div>
       ) : (
         <div className="space-y-2">
@@ -313,7 +311,7 @@ function ScoreRow({ score, onDelete }: { score: Score; onDelete?: () => void }) 
           className="opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-red-600 text-xs ml-1"
           title="Delete score"
         >
-          ✕
+          <Trash2 className="h-3.5 w-3.5" />
         </button>
       )}
     </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { ArrowRight, Plus } from "lucide-react";
 import { datasetsApi, Dataset } from "../api/datasets";
 
 export default function DatasetsPage() {
@@ -40,9 +41,9 @@ export default function DatasetsPage() {
         </div>
         <button
           onClick={() => setShowCreate(!showCreate)}
-          className="bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800"
+          className="inline-flex items-center gap-1 bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800"
         >
-          {showCreate ? "Cancel" : "+ New Dataset"}
+          {showCreate ? "Cancel" : (<><Plus className="h-3.5 w-3.5" /> New Dataset</>)}
         </button>
       </div>
 
@@ -76,9 +77,9 @@ export default function DatasetsPage() {
             <button
               type="submit"
               disabled={!newName || createMut.isPending}
-              className="bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800 disabled:opacity-50"
+              className="inline-flex items-center gap-1 bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800 disabled:opacity-50"
             >
-              {createMut.isPending ? "Creating..." : "Create Dataset"}
+              {createMut.isPending ? "Creating..." : (<><Plus className="h-3.5 w-3.5" /> Create Dataset</>)}
             </button>
           </div>
         </form>
@@ -91,9 +92,10 @@ export default function DatasetsPage() {
           <p className="text-neutral-500 mb-4">No datasets yet. Create one to start running experiments.</p>
           <button
             onClick={() => setShowCreate(true)}
-            className="bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800"
+            className="inline-flex items-center gap-1 bg-neutral-900 text-white rounded px-4 py-2 text-sm font-medium hover:bg-neutral-800"
           >
-            + Create Dataset
+            <Plus className="h-3.5 w-3.5" />
+            Create Dataset
           </button>
         </div>
       )}
@@ -118,9 +120,10 @@ export default function DatasetsPage() {
                 <div className="flex items-center gap-2">
                   <Link
                     to={`/datasets/${ds.id}`}
-                    className="text-sm text-blue-600 hover:underline"
+                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
                   >
-                    Open →
+                    Open
+                    <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                   <button
                     onClick={() => { if (confirm("Delete this dataset?")) deleteMut.mutate(ds.id); }}

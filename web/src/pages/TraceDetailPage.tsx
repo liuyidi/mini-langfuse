@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { api, Observation } from "../api/client";
 import TraceTree from "../components/TraceTree";
 import WaterfallChart from "../components/WaterfallChart";
@@ -37,7 +38,10 @@ export default function TraceDetailPage() {
     <div className="p-6 max-w-[1600px] mx-auto">
       <div className="mb-4 text-sm text-neutral-500">
         <Link to="/" className="hover:underline">
-          ← Back to traces
+          <span className="inline-flex items-center gap-1">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back to traces
+          </span>
         </Link>
       </div>
 

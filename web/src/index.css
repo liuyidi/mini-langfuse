@@ -2,5 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-/* subtle grid-like styles */
-body { font-family: system-ui, -apple-system, sans-serif; }
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    @apply bg-neutral-50 text-neutral-900 transition-colors duration-200 dark:bg-neutral-950 dark:text-neutral-50;
+  }
+}

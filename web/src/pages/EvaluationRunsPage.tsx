@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { evaluationApi, EvaluationRun, EvaluationRunDetail } from "../api/evaluation";
 import { formatCost } from "../lib/format";
 
@@ -45,7 +46,10 @@ export default function EvaluationRunsPage() {
         <div>
           <h1 className="text-xl font-semibold">Evaluation Runs</h1>
           <p className="text-sm text-neutral-500 mt-1">
-            <Link to="/evaluations" className="text-blue-600 hover:underline">← Back to Evaluators</Link>
+            <Link to="/evaluations" className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Back to Evaluators
+            </Link>
           </p>
         </div>
         {evaluatorId && (

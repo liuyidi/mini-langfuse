@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
+import { ArrowLeft, ArrowRight, ExternalLink, Play } from "lucide-react";
 import { api, PromptVersion } from "../api/client";
 import { formatTime } from "../lib/format";
 import JsonViewer from "../components/JsonViewer";
@@ -65,7 +66,10 @@ export default function PromptDetailPage() {
     <div className="p-6 max-w-[1400px] mx-auto">
       <div className="mb-4 text-sm text-neutral-500">
         <Link to="/prompts" className="hover:underline">
-          ← Back to prompts
+          <span className="inline-flex items-center gap-1">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back to prompts
+          </span>
         </Link>
       </div>
 
@@ -86,9 +90,10 @@ export default function PromptDetailPage() {
               </span>
               <Link
                 to={`/prompts/${encodeURIComponent(decoded)}/playground`}
-                className="ml-auto text-sm bg-blue-600 hover:bg-blue-700 text-white rounded px-3 py-1"
+                className="ml-auto inline-flex items-center gap-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded px-3 py-1"
               >
-                Open in Playground ▶
+                <ExternalLink className="h-3.5 w-3.5" />
+                Open in Playground
               </Link>
             </div>
           </div>
@@ -142,9 +147,10 @@ export default function PromptDetailPage() {
                         </button>
                         <Link
                           to={`/prompts/${encodeURIComponent(decoded)}/playground?version=${v.version}`}
-                          className="text-xs text-blue-600 hover:underline"
+                          className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
                         >
-                          Try ▶
+                          <Play className="h-3 w-3" />
+                          Try
                         </Link>
                       </div>
                     </td>
@@ -172,7 +178,7 @@ export default function PromptDetailPage() {
                     </option>
                   ))}
                 </select>
-                <span className="text-neutral-400">→</span>
+                <ArrowRight className="h-3.5 w-3.5 text-neutral-400" />
                 <select
                   value={rightVer ?? ""}
                   onChange={(e) => setRightVer(Number(e.target.value))}
