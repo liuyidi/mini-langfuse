@@ -32,9 +32,8 @@ cd /opt/demo
 
 git clone <your-mini-langfuse-url> mini-langfuse
 git clone <your-minikb-url> minikb
-# minibot 在 nanobot 仓库里：
-git clone <your-nanobot-url> nanobot
-ln -sfn nanobot/minibot minibot
+# minibot monorepo：
+git clone https://github.com/liuyidi/minibot.git minibot
 ```
 
 得到：
@@ -43,8 +42,7 @@ ln -sfn nanobot/minibot minibot
 /opt/demo/
   mini-langfuse/
   minikb/
-  minibot -> nanobot/minibot
-  nanobot/
+  minibot/
 ```
 
 ## 一键启动
@@ -98,7 +96,7 @@ vim .env   # 至少填 OPENAI_API_KEY；路径默认已按上面布局写好
 ```env
 MLF_DIR=../..
 MINIKB_DIR=/Users/you/ai/minikb
-MINIBOT_DIR=/Users/you/ai/nanobot/minibot
+MINIBOT_REPO_DIR=/Users/you/github/minibot
 ```
 
 ## 运维

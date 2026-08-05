@@ -159,7 +159,7 @@ services:
   minibot:
     build:
       # Monorepo root so Docker can build webui/ + minibot/
-      context: ${NANOBOT_DIR:-../../../nanobot}
+      context: ${MINIBOT_REPO_DIR:-../../../minibot}
       dockerfile: Dockerfile.minibot
       additional_contexts:
         langfuse_sdk: ${MLF_DIR:-../..}/sdk-python

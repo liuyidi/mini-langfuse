@@ -126,11 +126,10 @@ cd /opt/demo
 # 换成你真实的仓库地址（私有库用 HTTPS + PAT，或配置 SSH deploy key）
 git clone https://github.com/<you>/mini-langfuse.git mini-langfuse
 git clone https://github.com/<you>/minikb.git minikb
-git clone https://github.com/<you>/nanobot.git nanobot
-ln -sfn nanobot/minibot minibot
+git clone https://github.com/liuyidi/minibot.git minibot
 
 ls -la
-# 应看到 mini-langfuse  minikb  minibot  nanobot
+# 应看到 mini-langfuse  minikb  minibot
 ```
 
 > 若还没 push `deploy/demo`，在本机先 `git push`，或用 `scp -r` 把整个 `mini-langfuse` 拷上去。

@@ -17,8 +17,8 @@ set -a; source "$ENV_FILE"; set +a
 
 MLF_DIR="${MLF_DIR:-${DIR}/../..}"
 MINIKB_DIR="${MINIKB_DIR:-${DIR}/../../../minikb}"
-MINIBOT_DIR="${MINIBOT_DIR:-${DIR}/../../../minibot}"
-NANOBOT_DIR="${NANOBOT_DIR:-}"
+MINIBOT_REPO_DIR="${MINIBOT_REPO_DIR:-}"
+MINIBOT_DIR="${MINIBOT_DIR:-}"
 
 # Resolve relative paths against deploy/demo
 resolve() {
@@ -28,36 +28,50 @@ resolve() {
 
 export MLF_DIR="$(resolve "$MLF_DIR")"
 export MINIKB_DIR="$(resolve "$MINIKB_DIR")"
-export MINIBOT_DIR="$(resolve "$MINIBOT_DIR")"
 
-# NANOBOT_DIR = monorepo root (parent of minibot package when using /opt/demo/nanobot)
-if [[ -z "$NANOBOT_DIR" ]]; then
-  if [[ -d "${MINIBOT_DIR}/../webui" ]]; then
-    NANOBOT_DIR="$(cd "${MINIBOT_DIR}/.." && pwd)"
-  elif [[ -d "${MINIBOT_DIR}/webui" ]]; then
-    NANOBOT_DIR="$MINIBOT_DIR"
-  else
-    NANOBOT_DIR="$(resolve "../../../nanobot")"
+# MINIBOT_REPO_DIR = monorepo root (contains Dockerfile.minibot + webui/ + minibot/)
+if [[ -z "$MINIBOT_REPO_DIR" ]]; then
+  if [[ -n "$MINIBOT_DIR" ]]; then
+    MINIBOT_DIR="$(resolve "$MINIBOT_DIR")"
+    if [[ -f "${MINIBOT_DIR}/Dockerfile.minibot" ]]; then
+      MINIBOT_REPO_DIR="$MINIBOT_DIR"
+    elif [[ -f "${MINIBOT_DIR}/../Dockerfile.minibot" ]]; then
+      MINIBOT_REPO_DIR="$(cd "${MINIBOT_DIR}/.." && pwd)"
+    fi
+  fi
+  if [[ -z "$MINIBOT_REPO_DIR" ]]; then
+    MINIBOT_REPO_DIR="$(resolve "../../../minibot")"
   fi
 else
-  NANOBOT_DIR="$(resolve "$NANOBOT_DIR")"
+  MINIBOT_REPO_DIR="$(resolve "$MINIBOT_REPO_DIR")"
 fi
-export NANOBOT_DIR
+export MINIBOT_REPO_DIR
+
+if [[ -z "${MINIBOT_DIR:-}" ]]; then
+  if [[ -d "${MINIBOT_REPO_DIR}/minibot" ]]; then
+    MINIBOT_DIR="${MINIBOT_REPO_DIR}/minibot"
+  else
+    MINIBOT_DIR="$MINIBOT_REPO_DIR"
+  fi
+else
+  MINIBOT_DIR="$(resolve "$MINIBOT_DIR")"
+fi
+export MINIBOT_DIR
 
 echo "MLF_DIR=$MLF_DIR"
 echo "MINIKB_DIR=$MINIKB_DIR"
+echo "MINIBOT_REPO_DIR=$MINIBOT_REPO_DIR"
 echo "MINIBOT_DIR=$MINIBOT_DIR"
-echo "NANOBOT_DIR=$NANOBOT_DIR"
 
-for d in "$MLF_DIR" "$NANOBOT_DIR"; do
+for d in "$MLF_DIR" "$MINIBOT_REPO_DIR"; do
   if [[ ! -d "$d" ]]; then
     echo "ERROR: path not found: $d" >&2
     exit 1
   fi
 done
 
-if [[ ! -f "${NANOBOT_DIR}/Dockerfile.minibot" ]]; then
-  echo "ERROR: missing ${NANOBOT_DIR}/Dockerfile.minibot" >&2
+if [[ ! -f "${MINIBOT_REPO_DIR}/Dockerfile.minibot" ]]; then
+  echo "ERROR: missing ${MINIBOT_REPO_DIR}/Dockerfile.minibot" >&2
   exit 1
 fi
 
