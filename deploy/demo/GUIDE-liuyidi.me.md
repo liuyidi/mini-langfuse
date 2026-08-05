@@ -160,7 +160,7 @@ nano .env
 POSTGRES_PASSWORD=<随机强密码>
 OPENAI_API_KEY=<你的 DeepSeek 或 OpenAI key>
 OPENAI_BASE_URL=https://api.deepseek.com/v1
-MINIBOT_MODEL=deepseek-chat
+MINIBOT_MODEL=deepseek-v4-flash
 MLF_CORS_ORIGINS=https://mlf.liuyidi.me,https://bot.liuyidi.me
 ```
 
