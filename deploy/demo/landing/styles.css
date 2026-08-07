@@ -240,6 +240,21 @@ footer {
   color: var(--muted);
   font-size: 0.85rem;
   border-top: 1px solid var(--line);
+  text-align: center;
+}
+
+footer .beian {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+}
+
+footer .beian a {
+  color: inherit;
+  text-decoration: none;
+}
+
+footer .beian a:hover {
+  text-decoration: underline;
 }
 
 @keyframes rise {
