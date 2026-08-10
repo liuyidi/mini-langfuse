@@ -161,6 +161,8 @@ services:
       # Monorepo root so Docker can build webui/ + minibot/
       context: ${MINIBOT_REPO_DIR:-../../../minibot}
       dockerfile: Dockerfile.minibot
+      args:
+        VITE_MINIBOT_RELEASES_URL: ${VITE_MINIBOT_RELEASES_URL:-https://downloads.liuyidi.me/minibot/releases.json}
       additional_contexts:
         langfuse_sdk: ${MLF_DIR:-../..}/sdk-python
     image: demo-minibot:local
