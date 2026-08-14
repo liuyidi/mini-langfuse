@@ -2,7 +2,7 @@
 
 # 域名 liuyidi.me 上线清单（ECS + HTTPS）
 
-目标：浏览器打开 **https://mlf.liuyidi.me**、**https://bot.liuyidi.me**（可选 **https://kb.liuyidi.me**）。
+目标：浏览器打开 **https://mlf.liuyidi.me**、**https://bot.liuyidi.me**、**https://kb.liuyidi.me**（kb 反代到 Volcengine）。
 
 ---
 
@@ -31,7 +31,7 @@
 
 ECS 上各仓库需已 clone，且 `deploy/demo/.env` 已存在。push `main`（触及 deploy/server/web）即触发 `./up.sh core`。
 
-minikb：`./up.sh kb`（需内存；面试前预热）。
+minikb：Volcengine + `publish-volcengine-minikb.yml`；阿里云只做 nginx 反代。
 
 ---
 
@@ -125,11 +125,10 @@ cd /opt/demo
 
 # 换成你真实的仓库地址（私有库用 HTTPS + PAT，或配置 SSH deploy key）
 git clone https://github.com/<you>/mini-langfuse.git mini-langfuse
-git clone https://github.com/<you>/minikb.git minikb
 git clone https://github.com/liuyidi/minibot.git minibot
 
 ls -la
-# 应看到 mini-langfuse  minikb  minibot
+# 应看到 mini-langfuse  minibot
 ```
 
 > 若还没 push `deploy/demo`，在本机先 `git push`，或用 `scp -r` 把整个 `mini-langfuse` 拷上去。
@@ -167,7 +166,6 @@ MLF_CORS_ORIGINS=https://mlf.liuyidi.me,https://bot.liuyidi.me
 
 ```env
 MLF_DIR=../..
-MINIKB_DIR=../../../minikb
 MINIBOT_DIR=../../../minibot
 ```
 
@@ -189,7 +187,7 @@ curl -s http://127.0.0.1:8766/health
 
 ```bash
 ./up.sh kb
-curl -s http://127.0.0.1:8081/health
+curl -fsS https://kb.liuyidi.me/health
 ```
 
 ---
@@ -271,4 +269,4 @@ curl -I https://bot.liuyidi.me
 
 - **Langfuse**：https://mlf.liuyidi.me  
 - **Minibot**：https://bot.liuyidi.me/ui/  
-- **Minikb**：https://kb.liuyidi.me/ui/ （需 `./up.sh kb`）
+- **Minikb**：https://kb.liuyidi.me/ui/ （Aliyun nginx → Volcengine）

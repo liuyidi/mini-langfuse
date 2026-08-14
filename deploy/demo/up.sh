@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Start demo stack. Run from deploy/demo/ or any cwd.
+# Start demo stack (mini-langfuse + minibot). Run from deploy/demo/ or any cwd.
+# minikb is deployed separately on Volcengine (publish-volcengine-minikb.yml).
 set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -16,7 +17,6 @@ fi
 set -a; source "$ENV_FILE"; set +a
 
 MLF_DIR="${MLF_DIR:-${DIR}/../..}"
-MINIKB_DIR="${MINIKB_DIR:-${DIR}/../../../minikb}"
 MINIBOT_REPO_DIR="${MINIBOT_REPO_DIR:-}"
 MINIBOT_DIR="${MINIBOT_DIR:-}"
 
@@ -27,7 +27,6 @@ resolve() {
 }
 
 export MLF_DIR="$(resolve "$MLF_DIR")"
-export MINIKB_DIR="$(resolve "$MINIKB_DIR")"
 
 # MINIBOT_REPO_DIR = monorepo root (contains Dockerfile.minibot + webui/ + minibot/)
 if [[ -z "$MINIBOT_REPO_DIR" ]]; then
@@ -59,7 +58,6 @@ fi
 export MINIBOT_DIR
 
 echo "MLF_DIR=$MLF_DIR"
-echo "MINIKB_DIR=$MINIKB_DIR"
 echo "MINIBOT_REPO_DIR=$MINIBOT_REPO_DIR"
 echo "MINIBOT_DIR=$MINIBOT_DIR"
 
@@ -75,32 +73,28 @@ if [[ ! -f "${MINIBOT_REPO_DIR}/Dockerfile.minibot" ]]; then
   exit 1
 fi
 
-PROFILE_ARGS=()
 MODE="${1:-core}"
 shift || true
 
 case "$MODE" in
-  core)
+  core|"")
     echo "Starting core: postgres + mini-langfuse + minibot(+webui)"
     ;;
   kb|full)
-    if [[ ! -d "$MINIKB_DIR" ]]; then
-      echo "ERROR: minikb path not found: $MINIKB_DIR" >&2
-      exit 1
-    fi
-    PROFILE_ARGS=(--profile "$MODE")
-    echo "Starting full demo (includes minikb + minio)"
+    echo "ERROR: minikb is no longer part of this compose stack." >&2
+    echo "  Deploy via minikb/.github/workflows/publish-volcengine-minikb.yml" >&2
+    echo "  Public URL: https://kb.liuyidi.me (Aliyun nginx → Volcengine :8080)" >&2
+    exit 1
     ;;
   *)
-    echo "Usage: $0 [core|kb|full] [extra docker compose args...]"
-    echo "  core  — langfuse + minibot (default, lightest)"
-    echo "  kb    — also minikb + minio"
-    echo "  full  — alias of kb"
+    echo "Usage: $0 [core] [extra docker compose args...]"
+    echo "  core  — langfuse + minibot (default)"
+    echo "  (kb/full removed — use Volcengine minikb publish workflow)"
     exit 1
     ;;
 esac
 
-"${COMPOSE[@]}" "${PROFILE_ARGS[@]}" up -d --build "$@"
+"${COMPOSE[@]}" up -d --build "$@"
 
 echo
 echo "Health:"
@@ -109,9 +103,9 @@ curl -fsS -o /dev/null -w "  mlf-web %{http_code}\n" http://127.0.0.1:8080/ || t
 curl -fsS http://127.0.0.1:8766/health && echo "  minibot ok" || echo "  minibot FAIL"
 curl -fsS -o /dev/null -w "  webui / %{http_code}\n" http://127.0.0.1:8766/ || true
 curl -fsS -o /dev/null -w "  devui /ui/ %{http_code}\n" http://127.0.0.1:8766/ui/ || true
-if [[ "$MODE" != "core" ]]; then
-  curl -fsS http://127.0.0.1:8081/health && echo "  minikb ok" || echo "  minikb FAIL"
-fi
+curl -fsS https://kb.liuyidi.me/health >/dev/null \
+  && echo "  minikb (public) ok" \
+  || echo "  minikb (public) FAIL — check Aliyun nginx → Volcengine"
 
 echo
 echo "Open:"
@@ -119,4 +113,4 @@ echo "  Landing   https://liuyidi.me/   (after P3 nginx)"
 echo "  WebUI     http://127.0.0.1:8766/"
 echo "  DevUI     http://127.0.0.1:8766/ui/"
 echo "  Langfuse  http://127.0.0.1:8080/"
-[[ "$MODE" != "core" ]] && echo "  Minikb    http://127.0.0.1:8081/ui/"
+echo "  Minikb    https://kb.liuyidi.me/ui/  (Volcengine)"

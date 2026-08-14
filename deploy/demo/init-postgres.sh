@@ -1,13 +1,7 @@
 #!/bin/bash
 # Runs once on first Postgres volume init (docker-entrypoint-initdb.d).
+# Only creates the mini-langfuse database; POSTGRES_DB already set minilangfuse.
+# minikb DB lives on Volcengine, not this demo Postgres.
 set -euo pipefail
 
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-  CREATE DATABASE minikb;
-EOSQL
-
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname minikb <<-EOSQL
-  CREATE EXTENSION IF NOT EXISTS vector;
-EOSQL
-
-echo "demo postgres: databases minilangfuse + minikb (pgvector) ready"
+echo "demo postgres: database minilangfuse ready (minikb is external)"

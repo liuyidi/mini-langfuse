@@ -41,15 +41,18 @@ jobs:
             cd "$DEMO_ROOT"
 
             echo "==> pull repos"
-            for d in mini-langfuse nanobot minikb; do
+            for d in mini-langfuse minibot; do
               if [ -d "$d/.git" ]; then
                 git -C "$d" fetch --depth 1 origin main || git -C "$d" fetch --depth 1 origin master || true
                 git -C "$d" reset --hard origin/main 2>/dev/null || git -C "$d" reset --hard origin/master 2>/dev/null || true
               fi
             done
-
-            # Keep symlink layout
-            ln -sfn nanobot/minibot minibot
+            # Legacy layout: nanobot/minibot symlink
+            if [ -d nanobot/.git ] && [ ! -d minibot/.git ]; then
+              git -C nanobot fetch --depth 1 origin main || true
+              git -C nanobot reset --hard origin/main 2>/dev/null || true
+              ln -sfn nanobot/minibot minibot
+            fi
 
             echo "==> compose up"
             cd mini-langfuse/deploy/demo

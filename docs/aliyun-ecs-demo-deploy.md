@@ -14,7 +14,7 @@
 浏览器
   https://mlf.liuyidi.me  → 宿主机 Nginx:443 → 127.0.0.1:8080 → mlf-web → server:8000
   https://bot.liuyidi.me  → 宿主机 Nginx:443 → 127.0.0.1:8766 → minibot
-  https://kb.liuyidi.me   → 宿主机 Nginx:443 → 127.0.0.1:8081 → minikb（可选 ./up.sh kb）
+  https://kb.liuyidi.me   → 宿主机 Nginx:443 → 101.96.224.232:80 → Volcengine minikb
          │
          ▼
    Docker Compose（agent-demo）
@@ -256,7 +256,7 @@ curl -s -o /dev/null -w "%{http_code}\n" https://bot.liuyidi.me/ui/
 
 ### 3.12 `https://kb.liuyidi.me` 502
 
-未执行 `./up.sh kb` 时没有 minikb 容器，属预期。面试可不启 kb。
+kb 已迁到 Volcengine；本机不再跑 `demo-minikb`。若 `https://kb.liuyidi.me` 502，检查 `upstream demo_kb` 与 Volcengine `:8080` / 安全组。
 
 ---
 
@@ -319,6 +319,6 @@ sudo certbot renew --dry-run
 | `https://bot.liuyidi.me/` | nanobot WebUI |
 | `https://bot.liuyidi.me/ui/` | DevUI |
 | `https://mlf.liuyidi.me` | mini-langfuse |
-| `https://kb.liuyidi.me` | minikb（`./up.sh kb`） |
+| `https://kb.liuyidi.me` | minikb（Volcengine，经 Aliyun nginx） |
 
 CI：`.github/workflows/deploy-demo.yml` + GitHub Secrets `ECS_*`。
