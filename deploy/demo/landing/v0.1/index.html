@@ -39,10 +39,10 @@
 
     <main>
       <section class="hero v01">
-        <p class="eyebrow" data-i18n="hero.eyebrow">Agent Lab · 面试入口</p>
+        <p class="eyebrow" data-i18n="hero.eyebrow">Agent Lab · Personal Stack</p>
         <h1 data-i18n-html="hero.title">自己造的一套<br /><em>Agent 工程栈</em></h1>
         <p class="lede" data-i18n="hero.lede">
-          Runtime · 可观测 · 知识库。可演示、可部署、可讲清楚取舍。
+          Runtime · 可观测 · 知识库 · 认证 · 发布通知。可演示、可部署、可讲清楚取舍。
         </p>
       </section>
 
@@ -65,6 +65,18 @@
           <p data-i18n="entry.kb.desc">上传、切片、检索、RAG；给 Agent 喂知识。</p>
           <span class="go" data-i18n="entry.kb.go">打开 kb.liuyidi.me →</span>
         </a>
+        <a class="entry" href="https://auth.liuyidi.me/">
+          <span class="kicker" data-i18n="entry.auth.kicker">04 · Auth</span>
+          <h2>mini-auth</h2>
+          <p data-i18n="entry.auth.desc">注册 / 登录 / JWT；统一身份认证服务。</p>
+          <span class="go" data-i18n="entry.auth.go">打开 auth.liuyidi.me →</span>
+        </a>
+        <a class="entry" href="https://serverless-ship.liuyidi.me/">
+          <span class="kicker" data-i18n="entry.ship.kicker">05 · Tools</span>
+          <h2>ServerlessShip</h2>
+          <p data-i18n="entry.ship.desc">发布与部署事件 → 飞书通知卡片。</p>
+          <span class="go" data-i18n="entry.ship.go">打开 serverless-ship.liuyidi.me →</span>
+        </a>
       </section>
 
       <div class="secondary-links">
@@ -74,7 +86,7 @@
 
       <section class="below">
         <p class="path" data-i18n-html="path">
-          <strong>建议演示顺序：</strong>先在 Agent 里聊一句 → 打开可观测看 Trace → 再到知识库上传/检索。
+          <strong>建议走查顺序：</strong>先在 Agent 里聊一句 → 打开可观测看 Trace → 再到知识库上传/检索；认证与发布通知可按需打开。
         </p>
         <details>
           <summary data-i18n="skills.title">我能讲清楚的能力</summary>
@@ -82,7 +94,7 @@
             <li data-i18n-html="skills.1"><strong>Agent Loop</strong> — 多轮 tool calling、锁与并发、会话持久化</li>
             <li data-i18n-html="skills.2"><strong>可观测</strong> — span/trace、评分、评测跑批、SSE 实时刷新</li>
             <li data-i18n-html="skills.3"><strong>工程交付</strong> — Docker Compose、Nginx HTTPS、国内镜像源、2C2G 省内存部署</li>
-            <li data-i18n-html="skills.4"><strong>产品化</strong> — 主站 WebUI + DevUI 双轨，面试时既能用又能讲</li>
+            <li data-i18n-html="skills.4"><strong>产品化</strong> — 主站 WebUI + DevUI 双轨，既能用又能讲清实现</li>
           </ul>
         </details>
       </section>
@@ -98,9 +110,9 @@
         "zh-CN": {
           "banner": "V0.1 预览 · 未替换正式首页",
           "banner.back": "返回正式版",
-          "hero.eyebrow": "Agent Lab · 面试入口",
+          "hero.eyebrow": "Agent Lab · Personal Stack",
           "hero.title": "自己造的一套<br /><em>Agent 工程栈</em>",
-          "hero.lede": "Runtime · 可观测 · 知识库。可演示、可部署、可讲清楚取舍。",
+          "hero.lede": "Runtime · 可观测 · 知识库 · 认证 · 发布通知。可演示、可部署、可讲清楚取舍。",
           "entry.bot.kicker": "01 · Agent",
           "entry.bot.desc": "对话、工具循环、流式输出；可查知识库。",
           "entry.bot.go": "打开 bot.liuyidi.me →",
@@ -110,22 +122,28 @@
           "entry.kb.kicker": "03 · Knowledge",
           "entry.kb.desc": "上传、切片、检索、RAG；给 Agent 喂知识。",
           "entry.kb.go": "打开 kb.liuyidi.me →",
+          "entry.auth.kicker": "04 · Auth",
+          "entry.auth.desc": "注册 / 登录 / JWT；统一身份认证服务。",
+          "entry.auth.go": "打开 auth.liuyidi.me →",
+          "entry.ship.kicker": "05 · Tools",
+          "entry.ship.desc": "发布与部署事件 → 飞书通知卡片。",
+          "entry.ship.go": "打开 serverless-ship.liuyidi.me →",
           "sec.devui": "开发笔记 DevUI /ui",
           "sec.github": "源码 GitHub @liuyidi",
-          "path": "<strong>建议演示顺序：</strong>先在 Agent 里聊一句 → 打开可观测看 Trace → 再到知识库上传/检索。",
+          "path": "<strong>建议走查顺序：</strong>先在 Agent 里聊一句 → 打开可观测看 Trace → 再到知识库上传/检索；认证与发布通知可按需打开。",
           "skills.title": "我能讲清楚的能力",
           "skills.1": "<strong>Agent Loop</strong> — 多轮 tool calling、锁与并发、会话持久化",
           "skills.2": "<strong>可观测</strong> — span/trace、评分、评测跑批、SSE 实时刷新",
           "skills.3": "<strong>工程交付</strong> — Docker Compose、Nginx HTTPS、国内镜像源、2C2G 省内存部署",
-          "skills.4": "<strong>产品化</strong> — 主站 WebUI + DevUI 双轨，面试时既能用又能讲",
+          "skills.4": "<strong>产品化</strong> — 主站 WebUI + DevUI 双轨，既能用又能讲清实现",
           "footer": "V0.1 预览 · 正式版仍在 /",
         },
         en: {
           "banner": "V0.1 preview · production home unchanged",
           "banner.back": "Back to live home",
-          "hero.eyebrow": "Agent Lab · Interview hub",
+          "hero.eyebrow": "Agent Lab · Personal Stack",
           "hero.title": "A handmade<br /><em>Agent engineering stack</em>",
-          "hero.lede": "Runtime · observability · knowledge. Demoable, deployable, explainable.",
+          "hero.lede": "Runtime · observability · knowledge · auth · release notify. Demoable, deployable, explainable.",
           "entry.bot.kicker": "01 · Agent",
           "entry.bot.desc": "Chat, tool loop, streaming; can query the knowledge base.",
           "entry.bot.go": "Open bot.liuyidi.me →",
@@ -135,14 +153,20 @@
           "entry.kb.kicker": "03 · Knowledge",
           "entry.kb.desc": "Ingest, chunk, retrieve, RAG — feed knowledge to the agent.",
           "entry.kb.go": "Open kb.liuyidi.me →",
+          "entry.auth.kicker": "04 · Auth",
+          "entry.auth.desc": "Sign-up / login / JWT — unified auth service.",
+          "entry.auth.go": "Open auth.liuyidi.me →",
+          "entry.ship.kicker": "05 · Tools",
+          "entry.ship.desc": "Release & deploy events → Feishu notification cards.",
+          "entry.ship.go": "Open serverless-ship.liuyidi.me →",
           "sec.devui": "Dev notes DevUI /ui",
           "sec.github": "Source on GitHub @liuyidi",
-          "path": "<strong>Suggested walkthrough:</strong> chat in Agent → open Observability for a Trace → upload/search in Knowledge.",
+          "path": "<strong>Suggested walkthrough:</strong> chat in Agent → open Observability for a Trace → upload/search in Knowledge; open Auth or ServerlessShip as needed.",
           "skills.title": "What I can walk through",
           "skills.1": "<strong>Agent Loop</strong> — multi-turn tool calling, locks/concurrency, session persistence",
           "skills.2": "<strong>Observability</strong> — span/trace, scoring, eval runs, live SSE",
           "skills.3": "<strong>Delivery</strong> — Docker Compose, Nginx HTTPS, CN mirrors, 2C2G-friendly deploy",
-          "skills.4": "<strong>Productization</strong> — WebUI + DevUI dual track for interview demos",
+          "skills.4": "<strong>Productization</strong> — WebUI + DevUI dual track: usable and explainable",
           "footer": "V0.1 preview · live home remains /",
         },
       };

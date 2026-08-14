@@ -6,7 +6,7 @@
     <title>刘一帝个人页</title>
     <meta
       name="description"
-      content="刘一帝个人页：minibot Agent、mini-langfuse 可观测、minikb 知识库面试演示栈。"
+      content="刘一帝个人页：minibot Agent、mini-langfuse 可观测、minikb 知识库、mini-auth 认证、ServerlessShip 发布通知。"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,6 +24,8 @@
         <a href="https://bot.liuyidi.me/" data-i18n="nav.agent">Agent</a>
         <a href="https://mlf.liuyidi.me/" data-i18n="nav.obs">可观测</a>
         <a href="https://kb.liuyidi.me/" data-i18n="nav.kb">知识库</a>
+        <a href="https://auth.liuyidi.me/" data-i18n="nav.auth">认证</a>
+        <a href="https://serverless-ship.liuyidi.me/" data-i18n="nav.ship">小工具</a>
         <a href="https://github.com/liuyidi" target="_blank" rel="noopener">GitHub</a>
         <select id="lang" aria-label="Language" style="margin-left:8px;font:inherit;font-size:12px;padding:2px 6px;border-radius:6px;border:1px solid rgba(0,0,0,.15);background:transparent;">
           <option value="zh-CN">简体中文</option>
@@ -34,10 +36,10 @@
 
     <main>
       <section class="hero">
-        <p class="eyebrow" data-i18n="hero.eyebrow">Agent Lab · 面试演示</p>
+        <p class="eyebrow" data-i18n="hero.eyebrow">Agent Lab · Personal Stack</p>
         <h1 data-i18n-html="hero.title">自己造的一套<br /><em>Agent 工程栈</em></h1>
         <p class="lede" data-i18n="hero.lede">
-          从 runtime、可观测到知识库：可演示、可部署、可讲清楚设计取舍。
+          从 runtime、可观测、知识库到认证与发布通知：可演示、可部署、可讲清楚设计取舍。
           不是套壳 demo，是我亲手落地的工程能力。
         </p>
         <div class="cta">
@@ -47,7 +49,7 @@
       </section>
 
       <section class="projects" id="projects">
-        <h2 data-i18n="projects.title">三个项目</h2>
+        <h2 data-i18n="projects.title">项目与小工具</h2>
         <div class="cards">
           <article class="card">
             <h3>minibot + WebUI</h3>
@@ -73,6 +75,22 @@
             </p>
             <a href="https://kb.liuyidi.me/">kb.liuyidi.me →</a>
           </article>
+          <article class="card">
+            <h3>mini-auth</h3>
+            <p data-i18n="projects.auth">
+              统一身份认证：注册 / 登录 / JWT 刷新 / 登出。
+              FastAPI + PostgreSQL，独立部署在 auth.liuyidi.me。
+            </p>
+            <a href="https://auth.liuyidi.me/">auth.liuyidi.me →</a>
+          </article>
+          <article class="card">
+            <h3>ServerlessShip</h3>
+            <p data-i18n="projects.ship">
+              发布通知小工具：GitHub Release / ECS 部署事件 → 飞书消息卡片。
+              Vercel + Supabase，服务 minibot 等项目的交付闭环。
+            </p>
+            <a href="https://serverless-ship.liuyidi.me/">serverless-ship.liuyidi.me →</a>
+          </article>
         </div>
       </section>
 
@@ -82,7 +100,7 @@
           <li data-i18n-html="skills.1"><strong>Agent Loop</strong> — 多轮 tool calling、锁与并发、会话持久化</li>
           <li data-i18n-html="skills.2"><strong>可观测</strong> — span/trace、评分、评测跑批、SSE 实时刷新</li>
           <li data-i18n-html="skills.3"><strong>工程交付</strong> — Docker Compose、Nginx HTTPS、国内镜像源、2C2G 省内存部署</li>
-          <li data-i18n-html="skills.4"><strong>产品化</strong> — 主站 WebUI + DevUI 双轨，面试时既能用又能讲</li>
+          <li data-i18n-html="skills.4"><strong>产品化</strong> — 主站 WebUI + DevUI 双轨，既能用又能讲清实现</li>
         </ul>
       </section>
     </main>
@@ -101,41 +119,47 @@
           "nav.agent": "Agent",
           "nav.obs": "可观测",
           "nav.kb": "知识库",
-          "hero.eyebrow": "Agent Lab · 面试演示",
+          "nav.auth": "认证",
+          "nav.ship": "小工具",
+          "hero.eyebrow": "Agent Lab · Personal Stack",
           "hero.title": "自己造的一套<br /><em>Agent 工程栈</em>",
-          "hero.lede": "从 runtime、可观测到知识库：可演示、可部署、可讲清楚设计取舍。不是套壳 demo，是我亲手落地的工程能力。",
+          "hero.lede": "从 runtime、可观测、知识库到认证与发布通知：可演示、可部署、可讲清楚设计取舍。不是套壳 demo，是我亲手落地的工程能力。",
           "cta.agent": "打开 Agent",
           "cta.devui": "看开发笔记 /ui",
-          "projects.title": "三个项目",
+          "projects.title": "项目与小工具",
           "projects.bot": "FastAPI Agent runtime：工具循环、会话、MCP、流式输出；主站是 nanobot WebUI，附属 /ui 讲清实现思路。",
           "projects.mlf": "自研可观测：Traces / Sessions / Scores / Evaluators / Playground，Python SDK + LangChain 接入，minibot 每轮对话可上报。",
           "projects.kb": "Agent 知识库：文档摄入、切片、向量检索、RAG QA。与 minibot 通过 REST 集成（持续演进中）。",
+          "projects.auth": "统一身份认证：注册 / 登录 / JWT 刷新 / 登出。FastAPI + PostgreSQL，独立部署在 auth.liuyidi.me。",
+          "projects.ship": "发布通知小工具：GitHub Release / ECS 部署事件 → 飞书消息卡片。Vercel + Supabase，服务 minibot 等项目的交付闭环。",
           "skills.title": "我能讲清楚的能力",
           "skills.1": "<strong>Agent Loop</strong> — 多轮 tool calling、锁与并发、会话持久化",
           "skills.2": "<strong>可观测</strong> — span/trace、评分、评测跑批、SSE 实时刷新",
           "skills.3": "<strong>工程交付</strong> — Docker Compose、Nginx HTTPS、国内镜像源、2C2G 省内存部署",
-          "skills.4": "<strong>产品化</strong> — 主站 WebUI + DevUI 双轨，面试时既能用又能讲",
-          "footer": "为面试演示而建 · 源码见 GitHub @liuyidi",
+          "skills.4": "<strong>产品化</strong> — 主站 WebUI + DevUI 双轨，既能用又能讲清实现",
         },
         en: {
           "nav.agent": "Agent",
           "nav.obs": "Observability",
           "nav.kb": "Knowledge",
-          "hero.eyebrow": "Agent Lab · Interview Demo",
+          "nav.auth": "Auth",
+          "nav.ship": "Tools",
+          "hero.eyebrow": "Agent Lab · Personal Stack",
           "hero.title": "A handmade<br /><em>Agent engineering stack</em>",
-          "hero.lede": "From runtime and observability to knowledge base: demable, deployable, and explainable. Not a wrapper demo — engineering I shipped myself.",
+          "hero.lede": "From runtime, observability, and knowledge base to auth and release notifications: demable, deployable, and explainable. Not a wrapper demo — engineering I shipped myself.",
           "cta.agent": "Open Agent",
           "cta.devui": "Dev notes /ui",
-          "projects.title": "Three projects",
+          "projects.title": "Projects & tools",
           "projects.bot": "FastAPI agent runtime: tool loop, sessions, MCP, streaming. Main site is nanobot WebUI; /ui explains the implementation.",
           "projects.mlf": "Homegrown observability: Traces / Sessions / Scores / Evaluators / Playground, with Python SDK + LangChain. Minibot reports every turn.",
           "projects.kb": "Agent knowledge base: ingest, chunking, vector retrieval, RAG QA. Integrated with minibot over REST (still evolving).",
+          "projects.auth": "Unified auth: sign-up / login / JWT refresh / logout. FastAPI + PostgreSQL at auth.liuyidi.me.",
+          "projects.ship": "Release notifier: GitHub Release / ECS deploy events → Feishu cards. Vercel + Supabase for the delivery loop around minibot.",
           "skills.title": "What I can walk through",
           "skills.1": "<strong>Agent Loop</strong> — multi-turn tool calling, locks/concurrency, session persistence",
           "skills.2": "<strong>Observability</strong> — span/trace, scoring, eval runs, live SSE",
           "skills.3": "<strong>Delivery</strong> — Docker Compose, Nginx HTTPS, CN mirrors, 2C2G-friendly deploy",
-          "skills.4": "<strong>Productization</strong> — WebUI + DevUI dual track for interview demos",
-          "footer": "Built for interviews · source on GitHub @liuyidi",
+          "skills.4": "<strong>Productization</strong> — WebUI + DevUI dual track: usable and explainable",
         },
       };
       let locale = localStorage.getItem(KEY) || "zh-CN";
