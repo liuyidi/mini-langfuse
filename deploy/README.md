@@ -1,7 +1,9 @@
 # mini-langfuse 单机部署指南
 
-本目录只负责 **mini-langfuse**（web + server + Postgres）：Docker Compose + 宿主机 Nginx HTTPS。  
+本目录只负责 **生产** mini-langfuse（web + server + Postgres）：Docker Compose + 宿主机 Nginx HTTPS。  
 生产机：**腾讯云** `124.223.108.72`，域名 `https://mlf.liuyidi.me`。
+
+仓库根目录的 `docker-compose.yml` / `.env.example` 是 **本机开发**（含 Redis / ClickHouse / worker），不要在这台机器上 `docker compose up`。
 
 > 迁移实录：[`../docs/tencent-lighthouse-mlf-migrate.md`](../docs/tencent-lighthouse-mlf-migrate.md)。  
 > 阿里云旧三件套实录（只读）：[`../docs/aliyun-ecs-demo-deploy.md`](../docs/aliyun-ecs-demo-deploy.md)。
@@ -10,11 +12,10 @@
 
 | 路径 | 内容 |
 |------|------|
-| `mini-langfuse/deploy/`（本目录） | **仅 mlf** 生产 Compose / Nginx / `.env` 模板 |
+| `mini-langfuse/docker-compose.yml` | 本机 dev |
+| `mini-langfuse/deploy/`（本目录） | **仅 mlf 生产** Compose / Nginx / `.env` 模板 |
 | `minibot/deploy/` | minibot + `liuyidi.me` 落地页 + Aliyun nginx（bot / kb） |
 | `minikb/deploy/` | minikb 独立部署 |
-
-面试同机三件套 `deploy/demo/` 已删除；不要再往阿里云 ECS 起 mlf。
 
 ## 架构
 
@@ -55,9 +56,11 @@ sudo apt install -y nginx certbot python3-certbot-nginx
 git clone <your-repo-url> mini-langfuse
 cd mini-langfuse
 
-cp deploy/.env.prod.example deploy/.env.prod
-vim deploy/.env.prod
+cp deploy/.env.example deploy/.env
+vim deploy/.env
 ```
+
+（若机上仍是 `deploy/.env.prod`，`./deploy/up.sh` 会继续用它，方便时改名为 `.env`。）
 
 必改项：
 
@@ -71,8 +74,6 @@ vim deploy/.env.prod
 
 ```bash
 ./deploy/up.sh
-# 或：
-docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.prod up -d --build
 curl -s http://127.0.0.1:8000/health
 ```
 
@@ -108,9 +109,8 @@ MINIBOT_SERVER_LANGFUSE_SECRET_KEY=sk-...
 ## 运维命令
 
 ```bash
-docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.prod logs -f server
-git pull
 ./deploy/up.sh
+docker compose -f deploy/docker-compose.yml --env-file deploy/.env logs -f server
 docker exec mlf-db pg_dump -U mlf minilangfuse > backup-$(date +%F).sql
 ```
 

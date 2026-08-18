@@ -1,12 +1,14 @@
-# Production compose for Tencent Cloud (or any single-host mlf deploy).
+# Production compose for Tencent Cloud (mlf.liuyidi.me).
+# LOCAL / DEV stack is the repo-root docker-compose.yml — do not run that here.
 #
 # Usage (from repo root):
-#   cp deploy/.env.prod.example deploy/.env.prod
-#   # edit deploy/.env.prod
+#   cp deploy/.env.example deploy/.env
 #   ./deploy/up.sh
 #
-# Only web (8080) is exposed on localhost; host Nginx terminates TLS and proxies to it.
+# Only web (8080) is exposed on localhost; host Nginx terminates TLS.
 # PostgreSQL stays on the internal Docker network (no host port).
+# No Redis / ClickHouse / worker — production still uses sync Postgres ingestion.
+# Do not set `name:` here: the live volume is already bound to this compose project.
 
 services:
   db:
@@ -16,7 +18,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-minilangfuse}
       POSTGRES_USER: ${POSTGRES_USER:-mlf}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env.prod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}
     volumes:
       - mlf_pg:/var/lib/postgresql/data
     healthcheck:
@@ -37,14 +39,13 @@ services:
       db:
         condition: service_healthy
     env_file:
-      - .env.prod
+      - ${MLF_ENV_FILE:-.env}
     environment:
       MLF_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-mlf}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-minilangfuse}
       MLF_CORS_ORIGINS: ${MLF_CORS_ORIGINS:?set MLF_CORS_ORIGINS to your public https origin}
       MLF_OPENAI_API_KEY: ${MLF_OPENAI_API_KEY:-}
       MLF_OPENAI_BASE_URL: ${MLF_OPENAI_BASE_URL:-https://api.openai.com/v1}
       MLF_ANTHROPIC_API_KEY: ${MLF_ANTHROPIC_API_KEY:-}
-    # Bind to localhost only — SDK / ingestion can also go through host Nginx → web → server.
     ports:
       - "127.0.0.1:${MLF_SERVER_PORT:-8000}:8000"
     command: >

@@ -16,7 +16,7 @@ bot / 落地页见 [minibot/deploy](https://github.com/liuyidi/minibot/tree/main
 - ✅ **Milestone 2** — Generation cost calculation from built-in pricing table (OpenAI, Anthropic, Gemini); `@observe` decorator; `mini_langfuse.openai` drop-in wrapper; cost breakdown in UI.
 - ✅ **Milestone 3** — Session aggregation view; background flusher thread (non-blocking, atexit-safe); UI sessions list + conversation timeline.
 - ✅ **Milestone 4** — Score API + inline scoring UI (numeric / boolean / categorical); versioned Prompts with mutable `production` label pointer; SDK `create_prompt`, `get_prompt(name, label=...)`, `PromptClient.compile(vars)`; Prompt diff viewer in UI; Generation → PromptVersion link.
-- ✅ **Milestone 5** — `docker-compose up` deployment (multi-stage Node build → Nginx serving the SPA and proxying `/api/*` to the FastAPI container); pytest suite covering ingestion idempotency, cost math, tree building, prompt label movement, score validation, SDK contextvar isolation, flusher fault tolerance, and prompt compile.
+- ✅ **Milestone 5** — Docker Compose (local UI + API) + pytest suite covering ingestion idempotency, cost math, tree building, prompt label movement, score validation, SDK contextvar isolation, flusher fault tolerance, and prompt compile.
 - ✅ **M7** — Waterfall chart on the trace detail page (three-column layout: Tree | Waterfall | Detail) with hover/select linked across all three panes.
 - ✅ **M8** — Playground page: edit chat messages, auto-detect `{{variables}}`, run against mock / OpenAI / Anthropic providers, response with latency+tokens+cost, save-as-new-version dialog; every run is auto-persisted as a `playground:*` trace so it also shows up in Traces.
 
@@ -70,12 +70,20 @@ mini-langfuse/
 │   ├── src/               # pages, components, api client
 │   ├── Dockerfile
 │   └── nginx.conf
-├── docker-compose.yml     # one-command deploy
+├── docker-compose.yml     # local/dev only (Postgres + Redis + ClickHouse + worker)
+├── .env.example           # local/dev env template
+├── deploy/                # production (Tencent / mlf.liuyidi.me)
+│   ├── docker-compose.yml
+│   ├── .env.example
+│   ├── up.sh
+│   └── tencent-nginx.conf
 ├── demo.py                # generates sample traces + prompts + scores
 └── mini-langfuse-plan.md  # full design doc
 ```
 
-## Quickstart — Docker (5-minute recommended path)
+## Quickstart — Docker (local / 5-minute path)
+
+This is **not** how `mlf.liuyidi.me` is run. Production: [`deploy/README.md`](./deploy/README.md).
 
 ```bash
 git clone https://github.com/liuyidi/mini-langfuse.git

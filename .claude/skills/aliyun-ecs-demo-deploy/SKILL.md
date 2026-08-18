@@ -13,7 +13,7 @@ description: >-
 | https://mlf.liuyidi.me | mini-langfuse | 腾讯云 `ubuntu@124.223.108.72` |
 
 密钥：`mini-langfuse/deploy/tencent-mini-langfuse.pem`（已 gitignore）。  
-Compose：`deploy/docker-compose.prod.yml` + `deploy/.env.prod`。  
+Compose：`deploy/docker-compose.yml` + `deploy/.env`（机上若仍是 `.env.prod`，`up.sh` 会兼容）。  
 Nginx：`deploy/tencent-nginx.conf`。
 
 阿里云 ECS **不再跑** mlf；历史实录见 `docs/aliyun-ecs-demo-deploy.md`。
@@ -49,6 +49,6 @@ curl -fsS -o /dev/null -w "%{http_code}\n" https://mlf.liuyidi.me/
 
 ## 约定
 
-1. 不要把 `.env.prod`、pem 写入 commit。
+1. 不要把 `deploy/.env`、`.env.prod`、pem 写入 commit。
 2. 不要在阿里云再起 `demo-mlf-*`。
 3. minibot 上报只依赖运行时 `MINIBOT_SERVER_LANGFUSE_HOST=https://mlf.liuyidi.me`。

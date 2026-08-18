@@ -80,7 +80,7 @@ sudo usermod -aG docker "$USER"   # 重新登录后生效
 
 ### 3.3 拉代码并只起 mlf
 
-使用 **生产 compose**（不是 `deploy/demo`）：
+使用 **`deploy/docker-compose.yml`**（不要用仓库根目录的 compose，那是本机 Redis/CH 实验栈）：
 
 ```bash
 sudo mkdir -p /opt/mlf && sudo chown "$USER" /opt/mlf
@@ -89,11 +89,11 @@ git clone git@github.com:liuyidi/mini-langfuse.git
 # 或 HTTPS / ghfast 镜像
 
 cd mini-langfuse
-cp deploy/.env.prod.example deploy/.env.prod
-chmod 600 deploy/.env.prod
+cp deploy/.env.example deploy/.env
+chmod 600 deploy/.env
 ```
 
-编辑 `deploy/.env.prod`：
+编辑 `deploy/.env`：
 
 | 变量 | 示例 |
 |------|------|
@@ -103,7 +103,7 @@ chmod 600 deploy/.env.prod
 | `MLF_OPENAI_*` | 按需（Playground / Evaluator） |
 
 ```bash
-docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.prod up -d --build
+./deploy/up.sh
 curl -fsS http://127.0.0.1:8000/health
 curl -fsS -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8080/
 ```
@@ -118,7 +118,7 @@ ssh -i ~/Downloads/agent.pem root@<旧ECS> \
   'docker exec demo-postgres pg_dump -U demo minilangfuse' > mlf-backup-$(date +%F).sql
 ```
 
-新机导入（容器名 `mlf-db`，用户/库见 `.env.prod`）：
+新机导入（容器名 `mlf-db`，用户/库见 `deploy/.env`）：
 
 ```bash
 # 先确保 compose 已启动且 db healthy
@@ -206,4 +206,4 @@ free -h
 
 - 不把 minibot / minikb 迁到腾讯 4C4G（避免再次合部署挤爆）。
 - 不购买 RDS MySQL（本项目是 **PostgreSQL**）。
-- 三件套同机文档已删；历史实录见 [`aliyun-ecs-demo-deploy.md`](./aliyun-ecs-demo-deploy.md)。新环境请用本指南 + `deploy/docker-compose.prod.yml`。
+- 三件套同机文档已删；历史实录见 [`aliyun-ecs-demo-deploy.md`](./aliyun-ecs-demo-deploy.md)。新环境请用本指南 + `deploy/docker-compose.yml`。

@@ -1,3 +1,7 @@
+# LOCAL / DEV ONLY.
+# Postgres + Redis + ClickHouse + worker. Ports published to the host.
+# Production (Tencent / mlf.liuyidi.me) is deploy/docker-compose.yml — do not run this there.
+
 services:
   # PostgreSQL database (M9)
   db:
