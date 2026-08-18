@@ -21,7 +21,7 @@ RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ --trus
     "fastapi>=0.111" \
     "uvicorn[standard]>=0.30" \
     "sqlalchemy>=2.0" \
-    "pydantic>=2.7" \
+    "pydantic[email]>=2.7" \
     "pydantic-settings>=2.3" \
     "python-ulid>=2.2" \
     "alembic>=1.13" \
