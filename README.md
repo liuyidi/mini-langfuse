@@ -6,7 +6,9 @@ Backend: **FastAPI + SQLAlchemy + SQLite/PostgreSQL**. Frontend: **React + Vite 
 📄 See [`mini-langfuse-plan.md`](./docs/plans/mini-langfuse-plan.md) for the full design doc, data model, and 5-milestone roadmap. Extension directions (M6+) live in [`mini-langfuse-plan-v2.md`](./docs/plans/mini-langfuse-plan-v2.md).
 🧭 Active product roadmap: [`mini-langfuse-plan-v3.md`](./docs/plans/mini-langfuse-plan-v3.md).
 
-🚀 **Aliyun ECS demo deploy (liuyidi.me) + pitfalls**: [`docs/aliyun-ecs-demo-deploy.md`](./docs/aliyun-ecs-demo-deploy.md) · templates in [`deploy/demo/`](./deploy/demo/).
+🚀 **Production deploy (Tencent / mlf.liuyidi.me)**: [`deploy/README.md`](./deploy/README.md).  
+📜 **Historical Aliyun 三件套实录（已拆分，只读）**: [`docs/aliyun-ecs-demo-deploy.md`](./docs/aliyun-ecs-demo-deploy.md).  
+bot / 落地页见 [minibot/deploy](https://github.com/liuyidi/minibot/tree/main/deploy)。
 
 ## Status
 

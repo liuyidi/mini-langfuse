@@ -1,10 +1,11 @@
 # 阿里云 ECS 三件套 Demo 部署实录（liuyidi.me）
 
-> 记录 2026-07-27 在阿里云经济型 e（2C2G）上部署  
-> **mini-langfuse + minibot**（可选 minikb）到 `https://mlf.liuyidi.me` / `https://bot.liuyidi.me` 的完整流程与踩坑。  
-> 配置模板见 [`../deploy/demo/`](../deploy/demo/)。  
->  
-> **后续**：mlf 单机迁腾讯云见 [`tencent-lighthouse-mlf-migrate.md`](./tencent-lighthouse-mlf-migrate.md)；minibot / minikb 独立部署分别见各自仓库 `deploy/`。
+> **状态：历史只读。** `deploy/demo/` 已删除。  
+> 当前：mlf → 腾讯云 [`deploy/README.md`](../deploy/README.md)；minibot + 落地页 → [minibot/deploy](https://github.com/liuyidi/minibot/tree/main/deploy)。  
+> 迁移说明：[`tencent-lighthouse-mlf-migrate.md`](./tencent-lighthouse-mlf-migrate.md)。
+>
+> 以下记录 2026-07-27 在阿里云经济型 e（2C2G）上部署  
+> **mini-langfuse + minibot**（可选 minikb）到 `https://mlf.liuyidi.me` / `https://bot.liuyidi.me` 的完整流程与踩坑。
 
 ---
 

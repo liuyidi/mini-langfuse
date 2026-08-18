@@ -9,7 +9,7 @@
 | 文档 | 用途 |
 |------|------|
 | [`../deploy/README.md`](../deploy/README.md) | **mlf 单机生产** Compose + Nginx（本迁移的目标形态） |
-| [`../deploy/demo/`](../deploy/demo/) | **历史** 面试三件套（mlf+bot+kb 同机），不再作为 mlf 主路径 |
+| ~~`../deploy/demo/`~~ | **已删除**（历史面试三件套）；见 [`aliyun-ecs-demo-deploy.md`](./aliyun-ecs-demo-deploy.md) |
 | [`aliyun-ecs-demo-deploy.md`](./aliyun-ecs-demo-deploy.md) | 阿里云 2C2G 三件套上线实录（只读参考） |
 
 **仓库边界（后续约定）**
@@ -131,7 +131,7 @@ cat mlf-backup-YYYY-MM-DD.sql | docker exec -i mlf-db \
 ### 3.5 Nginx + HTTPS
 
 ```bash
-sed "s/YOUR_DOMAIN/mlf.liuyidi.me/g" deploy/aliyun-nginx.conf \
+sed "s/YOUR_DOMAIN/mlf.liuyidi.me/g" deploy/tencent-nginx.conf \
   | sudo tee /etc/nginx/sites-available/mini-langfuse
 sudo ln -sf /etc/nginx/sites-available/mini-langfuse /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
@@ -206,4 +206,4 @@ free -h
 
 - 不把 minibot / minikb 迁到腾讯 4C4G（避免再次合部署挤爆）。
 - 不购买 RDS MySQL（本项目是 **PostgreSQL**）。
-- 三件套同机文档仍留在 `deploy/demo/`，仅作历史 / 面试 Demo；新环境请用本指南 + `deploy/docker-compose.prod.yml`。
+- 三件套同机文档已删；历史实录见 [`aliyun-ecs-demo-deploy.md`](./aliyun-ecs-demo-deploy.md)。新环境请用本指南 + `deploy/docker-compose.prod.yml`。

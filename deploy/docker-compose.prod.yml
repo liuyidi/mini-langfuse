@@ -1,9 +1,9 @@
-# Production compose for Aliyun ECS (or any single-host deploy).
+# Production compose for Tencent Cloud (or any single-host mlf deploy).
 #
 # Usage (from repo root):
 #   cp deploy/.env.prod.example deploy/.env.prod
 #   # edit deploy/.env.prod
-#   docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.prod up -d --build
+#   ./deploy/up.sh
 #
 # Only web (8080) is exposed on localhost; host Nginx terminates TLS and proxies to it.
 # PostgreSQL stays on the internal Docker network (no host port).

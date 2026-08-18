@@ -21,7 +21,7 @@ Cross-links: Landing ↔ products; WebUI/DevUI → mlf / kb / home.
 
 1. **P1 WebUI primary** — Serve `nanobot/web/dist` at `/` from minibot; keep `/ui` DevUI; Docker multi-stage build.
 2. **P2 Nav links** — Sidebar + DevUI drawer → mlf, kb, landing.
-3. **P3 Landing** — Static site under `mini-langfuse/deploy/demo/landing/` + nginx apex/`www`.
+3. **P3 Landing** — Static site under `minibot/deploy/landing/` + nginx apex/`www`.
 4. **P4 minikb** — Document/enable `./up.sh kb`; link live when healthy.
 5. **P5 CI/CD** — GitHub Action SSH deploy on push to `main`.
 
