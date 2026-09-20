@@ -153,10 +153,10 @@ def register(req: RegisterRequest, response: Response, db: Session = Depends(get
         membership = Membership(user_id=user.id, org_id=org.id, role="OWNER")
         db.add(membership)
 
-        # Create default project
+        # Create demo project (pinned UI project name)
         project = Project(
             id=f"proj_{user.id[:8]}",
-            name="default",
+            name="demo",
             org_id=org.id,
             created_at=now,
         )

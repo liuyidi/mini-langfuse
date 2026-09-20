@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from "../lib/auth";
+import { useAuth, isProjectSelectable } from "../lib/auth";
 import { organizationsApi, type OrganizationProject } from "../api/organizations";
 import { LanguageSwitcher, useI18n } from "../lib/i18n";
 import { useTheme, type ThemeMode } from "../lib/theme";
@@ -615,6 +615,11 @@ export function OrganizationSettingsPage() {
                     (currentOrg?.projects ?? []).map((project) => {
                       const active = currentProject?.id === project.id;
                       const isEditing = editingProjectId === project.id;
+                      const canSwitch = isProjectSelectable({
+                        id: project.id,
+                        name: project.name,
+                        org_id: project.org_id,
+                      });
                       return (
                         <div
                           key={project.id}
@@ -654,14 +659,16 @@ export function OrganizationSettingsPage() {
                                 <div className="text-xs text-neutral-500 dark:text-neutral-400 font-mono">{project.id}</div>
                               </div>
                               <div className="flex flex-wrap items-center gap-2">
-                                <button
-                                  type="button"
-                                  disabled={active}
-                                  onClick={() => setCurrentProject({ id: project.id, name: project.name, org_id: project.org_id })}
-                                  className={buttonClass()}
-                                >
-                                  {active ? t("settings.currentProject") : t("settings.switchProject")}
-                                </button>
+                                {canSwitch ? (
+                                  <button
+                                    type="button"
+                                    disabled={active}
+                                    onClick={() => setCurrentProject({ id: project.id, name: project.name, org_id: project.org_id })}
+                                    className={buttonClass()}
+                                  >
+                                    {active ? t("settings.currentProject") : t("settings.switchProject")}
+                                  </button>
+                                ) : null}
                                 <button type="button" onClick={() => beginRenameProject(project)} className={buttonClass()}>
                                   {t("settings.rename")}
                                 </button>

@@ -18,7 +18,7 @@ import ScoresAnalyticsPage from "./pages/ScoresAnalyticsPage";
 import DatasetsPage from "./pages/DatasetsPage";
 import DatasetDetailPage from "./pages/DatasetDetailPage";
 import UsersAnalyticsPage from "./pages/UsersAnalyticsPage";
-import { AuthProvider, useAuth } from "./lib/auth";
+import { AuthProvider, useAuth, isProjectSelectable } from "./lib/auth";
 import { I18nProvider, useI18n } from "./lib/i18n";
 import { ThemeProvider } from "./lib/theme";
 import { useQueryClient } from "@tanstack/react-query";
@@ -113,6 +113,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function Sidebar() {
   const { user, projects, currentProject, setCurrentProject, logout } = useAuth();
+  const selectableProjects = projects.filter(isProjectSelectable);
   const navigate = useNavigate();
   const { t } = useI18n();
 
@@ -133,20 +134,26 @@ function Sidebar() {
         </div>
       </div>
 
-      {/* Project Selector */}
+      {/* Project Selector — pinned to demo; hide legacy "default" */}
       <div className="px-3 py-3 border-b border-neutral-100 shrink-0 dark:border-neutral-800">
-        <select
-          value={currentProject?.id || ""}
-          onChange={(e) => {
-            const p = projects.find((p) => p.id === e.target.value);
-            if (p) setCurrentProject(p);
-          }}
-          className="w-full text-xs font-medium border border-neutral-200 rounded-md px-2 py-1.5 bg-neutral-50 text-neutral-700 focus:outline-none focus:ring-1 focus:ring-neutral-300 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-200 dark:focus:ring-neutral-600"
-        >
-          {projects.map((p) => (
-            <option key={p.id} value={p.id}>{p.name}</option>
-          ))}
-        </select>
+        {selectableProjects.length <= 1 ? (
+          <div className="w-full text-xs font-medium border border-neutral-200 rounded-md px-2 py-1.5 bg-neutral-50 text-neutral-700 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-200">
+            {currentProject?.name || selectableProjects[0]?.name || "—"}
+          </div>
+        ) : (
+          <select
+            value={currentProject?.id || ""}
+            onChange={(e) => {
+              const p = selectableProjects.find((p) => p.id === e.target.value);
+              if (p) setCurrentProject(p);
+            }}
+            className="w-full text-xs font-medium border border-neutral-200 rounded-md px-2 py-1.5 bg-neutral-50 text-neutral-700 focus:outline-none focus:ring-1 focus:ring-neutral-300 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-200 dark:focus:ring-neutral-600"
+          >
+            {selectableProjects.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* Navigation — only this area scrolls if nav items overflow */}

@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     demo_public_key: str = "pk-lf-demo"
     demo_secret_key: str = "sk-lf-demo"
     demo_project_id: str = "proj_demo"
-    demo_project_name: str = "demo"
+    demo_project_name: str = "minibot"
 
     # LLM for Playground + Eval (OpenAI-compatible; DeepSeek etc. via base_url)
     # Env: MLF_OPENAI_API_KEY / MLF_OPENAI_BASE_URL (also falls back to OPENAI_* in llm_proxy)

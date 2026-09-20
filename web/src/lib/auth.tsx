@@ -20,6 +20,27 @@ export type Project = {
   org_id: string | null;
 };
 
+/** Temporarily pin UI to this project; hide legacy "default" from switching. */
+export const PINNED_PROJECT_NAME = "demo";
+const HIDDEN_PROJECT_NAMES = new Set(["default"]);
+
+export function isProjectSelectable(project: Project): boolean {
+  return !HIDDEN_PROJECT_NAMES.has(project.name);
+}
+
+export function resolveCurrentProject(
+  projects: Project[],
+  savedProjectId: string | null,
+): Project | null {
+  const selectable = projects.filter(isProjectSelectable);
+  const pinned = selectable.find((p) => p.name === PINNED_PROJECT_NAME);
+  if (pinned) return pinned;
+  const saved = savedProjectId
+    ? selectable.find((p) => p.id === savedProjectId)
+    : undefined;
+  return saved || selectable[0] || null;
+}
+
 export type MeResponse = {
   user: User;
   organizations: Organization[];
@@ -69,10 +90,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(data.user);
         setOrganizations(data.organizations);
         setProjects(data.projects);
-        // Restore last selected project or use first
+        // Prefer pinned "demo"; never land on hidden "default"
         const savedProjectId = localStorage.getItem("currentProjectId");
-        const saved = data.projects.find((p) => p.id === savedProjectId);
-        const nextProject = saved || data.projects[0] || null;
+        const nextProject = resolveCurrentProject(data.projects, savedProjectId);
         setCurrentProjectState(nextProject);
         if (nextProject) {
           localStorage.setItem("currentProjectId", nextProject.id);
@@ -100,6 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setCurrentProject = (project: Project) => {
+    if (!isProjectSelectable(project)) return;
     setCurrentProjectState(project);
     localStorage.setItem("currentProjectId", project.id);
     setActiveProjectId(project.id);

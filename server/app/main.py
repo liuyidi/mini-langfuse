@@ -36,6 +36,9 @@ def _ensure_demo_project() -> None:
             if existing is None:
                 db.add(Project(id=settings.demo_project_id, name=settings.demo_project_name))
                 db.commit()
+            elif existing.name != settings.demo_project_name:
+                existing.name = settings.demo_project_name
+                db.commit()
 
             # Ensure demo API key exists for backward compatibility
             demo_pk = settings.demo_public_key
