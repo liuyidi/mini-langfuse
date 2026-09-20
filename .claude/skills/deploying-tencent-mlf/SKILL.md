@@ -25,9 +25,15 @@ description: >-
 - **允许**：commit / push；`gh run list` / `gh run watch`；验收公网 URL。
 - **禁止**：本机 `ssh` / `rsync` / `scp` 同步代码；在机上手动 `git pull` + `./deploy/up.sh` 当发布路径；绕过 workflow 的热修。
 - **例外**：用户明确要求只读排障（日志）且不是发版时，才可只读 SSH。代码上线仍走 push → workflow。
-- **若仓库尚无 publish workflow**：不要回退到 SSH 发版；先补齐 `.github/workflows/` 发布流水线，再 push 触发。不要用「临时 SSH」代替 CI。
 
-机上布局（供排障参考，非发布路径）：代码 `/opt/mlf/mini-langfuse`；compose `deploy/docker-compose.yml` + `deploy/.env`。
+Workflow：`.github/workflows/publish-mlf-tencent.yml`（`Publish MLF (Tencent)`）。
+
+触发：
+
+1. `git push origin main`（命中 `server/` / `web/` / `deploy/` 等）
+2. 或：`gh workflow run "Publish MLF (Tencent)" --ref main`
+
+机上布局（供排障参考，非发布路径）：代码 `/opt/mlf/mini-langfuse`；compose `deploy/docker-compose.yml` + `deploy/.env`（或 legacy `.env.prod`）。
 
 ## Agent 发布步骤
 
@@ -35,9 +41,8 @@ description: >-
 git status -sb
 git push -u origin HEAD
 
-# 有正式 workflow 名后：
-# gh workflow run "<Publish MLF workflow name>" --ref main
-gh run list --limit 5
+gh workflow run "Publish MLF (Tencent)" --ref main   # 若 push 未自动触发
+gh run list --workflow "Publish MLF (Tencent)" --limit 3
 gh run watch
 ```
 
